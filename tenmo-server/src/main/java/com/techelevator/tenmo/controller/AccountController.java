@@ -19,7 +19,7 @@ public class AccountController {
 
     @PreAuthorize("isAuthenticated()")
     @RequestMapping (path = "/accounts/{id}", method = RequestMethod.GET)
-    public BigDecimal getUserBalance(@PathVariable int id) {
+    public BigDecimal getUserBalance(@PathVariable Long id) {
         return accountDao.getUserBalance(id);
     }
 
