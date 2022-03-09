@@ -1,13 +1,24 @@
 package com.techelevator.tenmo.model;
 
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.Positive;
 import java.math.BigDecimal;
 
 public class Transfer {
+    @Positive
     private int transfer_id;
+    @Min(1)
+    @Max(2)
     private int transfer_type_id;
+    @Min(1)
+    @Max(3)
     private int transfer_status_id;
+    @Positive
     private int account_from;
+    @Positive
     private int account_to;
+    @Positive
     private BigDecimal amount;
 
     public Transfer() {}
