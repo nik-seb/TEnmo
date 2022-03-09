@@ -8,7 +8,7 @@ import java.math.BigDecimal;
 public class JdbcAccountDao implements AccountDao {
 
     @Override
-    public BigDecimal getUserBalance() {
+    public BigDecimal getUserBalance(int id) {
         // TODO implement method
         return null;
     }
