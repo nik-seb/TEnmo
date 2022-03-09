@@ -1,22 +1,20 @@
 package com.techelevator.tenmo.controller;
 
-import com.techelevator.tenmo.dao.JdbcAccountDao;
+import com.techelevator.tenmo.dao.AccountDao;
 import com.techelevator.tenmo.model.Account;
 import com.techelevator.tenmo.model.Transfer;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 
+@RestController
 public class AccountController {
 
-    private JdbcAccountDao accountDao;
+    private AccountDao accountDao;
 
-    public AccountController () {
-        this.accountDao = new JdbcAccountDao();
+    public AccountController (AccountDao accountDao) {
+        this.accountDao = accountDao;
     }
 
     @PreAuthorize("isAuthenticated()")
