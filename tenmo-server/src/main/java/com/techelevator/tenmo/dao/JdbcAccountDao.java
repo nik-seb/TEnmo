@@ -1,7 +1,6 @@
 package com.techelevator.tenmo.dao;
 
 import com.techelevator.tenmo.model.Account;
-import com.techelevator.tenmo.model.Transfer;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
@@ -19,7 +18,7 @@ public class JdbcAccountDao implements AccountDao {
 
     @Override
     public BigDecimal getUserBalance(Long id) {
-        String sqlGetBalance = "SELECT balance FROM account WHERE user_id = ?";
+        String sqlGetBalance = "SELECT balance FROM account WHERE user_id = ?;";
         SqlRowSet result = jdbcTemplate.queryForRowSet(sqlGetBalance, id);
         BigDecimal balance = null;
         if (result.next()) {
@@ -29,9 +28,34 @@ public class JdbcAccountDao implements AccountDao {
     }
 
     @Override
-    public Account updateBalance(Transfer transfer) {
-        // TODO implement method
+    public void updateBalance(Account account) {
+        String sql =    "UPDATE account " +
+                        "SET balance = ? " +
+                        "WHERE account_id = ?;";
 
-        return null;
+        jdbcTemplate.update(sql, account.getBalance(), account.getAccount_id());
+    }
+
+    @Override
+    public Account getAccountById(Long id) {
+        String sql =    "SELECT * FROM account WHERE user_id = ?;";
+        SqlRowSet result = jdbcTemplate.queryForRowSet(sql, id);
+
+        Account returnedAccount = null;
+        if (result.next()) {
+            returnedAccount = mapRowSetToAccount(result);
+        }
+
+        return returnedAccount;
+    }
+
+    private Account mapRowSetToAccount(SqlRowSet rowSet) {
+         Account account = new Account();
+
+         account.setAccount_id(rowSet.getLong("account_id"));
+         account.setBalance(rowSet.getBigDecimal("balance"));
+         account.setUser_id(rowSet.getLong("user_id"));
+
+         return account;
     }
 }

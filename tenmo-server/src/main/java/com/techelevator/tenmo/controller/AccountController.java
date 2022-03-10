@@ -2,31 +2,34 @@ package com.techelevator.tenmo.controller;
 
 import com.techelevator.tenmo.dao.AccountDao;
 import com.techelevator.tenmo.model.Account;
-import com.techelevator.tenmo.model.Transfer;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 
 @RestController
+@PreAuthorize("isAuthenticated()")
 public class AccountController {
 
-    private AccountDao accountDao;
+    private final AccountDao accountDao;
 
     public AccountController (AccountDao accountDao) {
         this.accountDao = accountDao;
     }
 
-    @PreAuthorize("isAuthenticated()")
-    @RequestMapping (path = "/accounts/{id}", method = RequestMethod.GET)
+    @RequestMapping (value = "/api/accounts/{id}/balance", method = RequestMethod.GET)
     public BigDecimal getUserBalance(@PathVariable Long id) {
         return accountDao.getUserBalance(id);
     }
 
-    @PreAuthorize("isAuthenticated()")
-    @RequestMapping (path = "/accounts/{id}", method = RequestMethod.PUT)
-    public Account updateBalance(@RequestBody Transfer transfer) {
-        return accountDao.updateBalance(transfer);
+    @RequestMapping (value = "/api/accounts/{id}", method = RequestMethod.PUT)
+    public void updateBalance(@RequestBody Account account) {
+        accountDao.updateBalance(account);
+    }
+
+    @RequestMapping (value = "/api/accounts/{id}", method = RequestMethod.GET)
+    public Account getAccountById(@PathVariable Long id) {
+        return accountDao.getAccountById(id);
     }
 
 }
