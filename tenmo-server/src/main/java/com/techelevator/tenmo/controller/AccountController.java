@@ -23,8 +23,8 @@ public class AccountController {
     }
 
     @RequestMapping (value = "/api/accounts/{id}", method = RequestMethod.PUT)
-    public Account updateBalance(@RequestBody Account account) {
-        return accountDao.updateBalance(account);
+    public void updateBalance(@RequestBody Account account) {
+        accountDao.updateBalance(account);
     }
 
     @RequestMapping (value = "/api/accounts/{id}", method = RequestMethod.GET)

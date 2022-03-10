@@ -3,7 +3,6 @@ package com.techelevator.tenmo.services;
 import com.techelevator.tenmo.model.Account;
 import com.techelevator.tenmo.model.Transfer;
 import com.techelevator.util.BasicLogger;
-import jdk.jfr.ContentType;
 import org.springframework.http.*;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestClientResponseException;
@@ -88,9 +87,7 @@ public class AccountService {
         return transfer;
     }
 
-    public Account updateAccount(Account accountToUpdate) {
-        Account account = null;
-
+    public void updateAccount(Account accountToUpdate) {
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(authToken);
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -98,13 +95,10 @@ public class AccountService {
 
         try {
             ResponseEntity<Account> response =
-                    restTemplate.exchange(baseUrl + "api/accounts/" + accountToUpdate.getUser_id(), HttpMethod.POST, entity, Account.class);
-            account = response.getBody();
+                    restTemplate.exchange(baseUrl + "api/accounts/" + accountToUpdate.getUser_id(), HttpMethod.PUT, entity, Account.class);
         } catch (RestClientResponseException | ResourceAccessException e) {
             BasicLogger.log(e.getMessage());
         }
-
-        return account;
     }
 
     public Transfer sendBucks(Transfer newTransfer) {
@@ -115,11 +109,11 @@ public class AccountService {
 
         // handle the accounts after the transfer was created
         if (transfer != null) {
-            Account accountFrom = getAccountById(transfer.getAccount_from());
-            Account accountTo = getAccountById(transfer.getAccount_to());
+            Account accountFrom = transfer.getAccount_from();
+            Account accountTo = transfer.getAccount_to();
 
-            newAccountFrom = sendMoney(accountFrom, transfer.getTransferAmount());
-            newAccountTo = sendMoney(accountTo, transfer.getTransferAmount());
+            newAccountFrom = sendMoney(accountFrom, transfer.getAmount());
+            newAccountTo = receiveMoney(accountTo, transfer.getAmount());
         }
 
         if (newAccountFrom != null) {

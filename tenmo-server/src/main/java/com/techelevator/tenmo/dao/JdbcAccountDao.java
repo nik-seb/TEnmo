@@ -1,7 +1,6 @@
 package com.techelevator.tenmo.dao;
 
 import com.techelevator.tenmo.model.Account;
-import com.techelevator.tenmo.model.Transfer;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
@@ -29,10 +28,12 @@ public class JdbcAccountDao implements AccountDao {
     }
 
     @Override
-    public Account updateBalance(Account account) {
-        // TODO implement method
+    public void updateBalance(Account account) {
+        String sql =    "UPDATE account " +
+                        "SET balance = ? " +
+                        "WHERE account_id = ?;";
 
-        return null;
+        jdbcTemplate.update(sql, account.getBalance(), account.getAccount_id());
     }
 
     @Override

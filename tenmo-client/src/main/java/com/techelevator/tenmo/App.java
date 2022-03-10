@@ -85,11 +85,10 @@ public class App {
             } else if (menuSelection == 5) {
                 requestBucks();
             } else if (menuSelection == 0) {
-                continue;
+                System.out.println("Exiting...");
             } else {
                 System.out.println("Invalid Selection");
             }
-            consoleService.pause();
         }
     }
 
@@ -100,6 +99,10 @@ public class App {
 
 	private void viewTransferHistory() {
 		// TODO Auto-generated method stub
+        TransferType transferType = TransferType.REQUEST;
+
+        System.out.println(transferType);
+        System.out.println(transferType.getValue());
 		
 	}
 
@@ -116,7 +119,7 @@ public class App {
         while (userSelection != 0) {
             consoleService.printAllUsers(userList);
 
-            userSelection = consoleService.promptForMenuSelection("Please select a user... ");
+            userSelection = consoleService.promptForMenuSelection("Please select a user: ");
 
             if (userSelection > 0 && userSelection <= maxSelection) {
                 User user = userList.get(userSelection - 1);
@@ -129,7 +132,7 @@ public class App {
 
                 BigDecimal amountToTransfer = BigDecimal.ZERO;
                 while (amountToTransfer.compareTo(BigDecimal.ONE) < 0) {
-                    amountToTransfer = consoleService.promptForBigDecimal("Please enter an amount to transfer");
+                    amountToTransfer = consoleService.promptForBigDecimal("Please enter an amount to transfer: ");
 
                     if (amountToTransfer.compareTo(currentBalance) >= 0) {
                         System.out.println("Insignificant funds!");
@@ -137,16 +140,25 @@ public class App {
                     }
                 }
 
+                Account userAccount = accountService.getAccountById(currentUser.getUser().getId());
+                Account toAccount = accountService.getAccountById(user.getId());
+
                 Transfer newTransfer = new Transfer();
 
-                newTransfer.setAccount_from(currentUser.getUser().getId());
-                newTransfer.setAccount_to(user.getId());
-                newTransfer.setTransfer_status(TransferStatus.APPROVED);
-                newTransfer.setTransfer_type(TransferType.SEND);
-                newTransfer.setTransferAmount(amountToTransfer);
+
+                newTransfer.setAccount_from(userAccount);
+                newTransfer.setAccount_to(toAccount);
+                newTransfer.setTransfer_status_id(TransferStatus.APPROVED);
+                newTransfer.setTransfer_type_id(TransferType.SEND);
+                newTransfer.setAmount(amountToTransfer);
 
 
                 Transfer transfer = accountService.sendBucks(newTransfer);
+
+                BigDecimal newBalance = transfer.getAccount_from().getBalance();
+
+                System.out.println("Your new balance is: " + newBalance);
+                userSelection = 0;
 
             } else if (userSelection != 0) {
                 System.out.println("Invalid selection");

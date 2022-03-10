@@ -52,7 +52,7 @@ public class ConsoleService {
         System.out.println();
         for (int i = 0; i < userList.size(); i += 1) {
             System.out.print(i + 1);
-            System.out.println(" : " + userList.get(i).getUsername());
+            System.out.println(": " + userList.get(i).getUsername());
         }
         System.out.println("0: Exit");
         System.out.println("");
