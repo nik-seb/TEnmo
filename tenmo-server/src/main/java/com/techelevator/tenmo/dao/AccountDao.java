@@ -9,6 +9,8 @@ public interface AccountDao {
 
     BigDecimal getUserBalance(Long id);
 
-    Account updateBalance(Transfer transfer);
+    Account updateBalance(Account account);
+
+    Account getAccountById(Long id);
 
 }

@@ -6,7 +6,6 @@ import javax.validation.constraints.Positive;
 import java.math.BigDecimal;
 
 public class Transfer {
-    @Positive
     private int transfer_id;
     @Min(1)
     @Max(2)
@@ -18,7 +17,6 @@ public class Transfer {
     private int account_from;
     @Positive
     private int account_to;
-    @Positive
     private BigDecimal amount;
 
     public Transfer() {}

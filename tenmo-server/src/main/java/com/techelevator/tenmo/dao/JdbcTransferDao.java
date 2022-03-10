@@ -38,6 +38,7 @@ public class JdbcTransferDao implements TransferDao{
 
     @Override
     public Transfer createTransfer(Transfer transfer) {
+        System.out.println(transfer.getAmount());
         String sql =    "INSERT INTO transfer (transfer_type_id, transfer_status_id, account_from, account_to, amount) " +
                         "VALUES (?, ?, ?, ?, ?) RETURNING transfer_id;";
 

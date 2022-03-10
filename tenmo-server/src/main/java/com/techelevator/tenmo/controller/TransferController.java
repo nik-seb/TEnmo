@@ -2,6 +2,7 @@ package com.techelevator.tenmo.controller;
 
 import com.techelevator.tenmo.dao.TransferDao;
 import com.techelevator.tenmo.model.Transfer;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -54,8 +55,9 @@ public class TransferController {
      * @param transfer - Transfer object
      * @return the Transfer object with the new transfer_id
      */
+    @ResponseStatus(HttpStatus.CREATED)
     @RequestMapping(value = "/transfers", method = RequestMethod.POST)
-    public Transfer createTransfer(@Valid @RequestBody Transfer transfer) {
+    public Transfer createTransfer(@RequestBody Transfer transfer) {
         return transferDao.createTransfer(transfer);
     }
 
@@ -66,7 +68,7 @@ public class TransferController {
      * @return the newly updated Transfer object
      */
     @RequestMapping(value = "/transfers/{id}", method = RequestMethod.PUT)
-    public Transfer transferApproval(@Valid @RequestBody Transfer transfer, @PathVariable int id) {
+    public Transfer transferApproval(@RequestBody Transfer transfer, @PathVariable int id) {
         return transferDao.transferApproval(transfer, id);
     }
 

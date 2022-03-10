@@ -3,22 +3,22 @@ package com.techelevator.tenmo.model;
 import java.math.BigDecimal;
 
 public class Transfer {
-    private int transfer_id;
-    private TransferType transfer_type;
-    private TransferStatus transfer_status;
-    private int account_from; // might want to be an account object
-    private int account_to; // ^^
+    private long transfer_id;
+    private int transfer_type;
+    private int transfer_status;
+    private long account_from; // might want to be an account object
+    private long account_to; // ^^
     private BigDecimal transferAmount;
 
-    public TransferType getTransfer_type() {
+    public int getTransfer_type() {
         return transfer_type;
     }
 
-    public TransferStatus getTransfer_status() {
+    public int getTransfer_status() {
         return transfer_status;
     }
 
-    public int getTransfer_id() {
+    public long getTransfer_id() {
         return transfer_id;
     }
 
@@ -26,19 +26,19 @@ public class Transfer {
         this.transfer_id = transfer_id;
     }
 
-    public int getAccount_from() {
+    public long getAccount_from() {
         return account_from;
     }
 
-    public void setAccount_from(int account_from) {
+    public void setAccount_from(long account_from) {
         this.account_from = account_from;
     }
 
-    public int getAccount_to() {
+    public long getAccount_to() {
         return account_to;
     }
 
-    public void setAccount_to(int account_to) {
+    public void setAccount_to(long account_to) {
         this.account_to = account_to;
     }
 
@@ -50,27 +50,27 @@ public class Transfer {
         this.transferAmount = transferAmount;
     }
 
-    public void setTransfer_type(int transfer_type_id) {
-        switch (transfer_type_id) {
-            case 1:
-               this.transfer_type = TransferType.REQUEST;
+    public void setTransfer_type(TransferType transfer_type) {
+        switch (transfer_type) {
+            case REQUEST:
+               this.transfer_type = 1;
                 break;
-            case 2:
-                this.transfer_type = TransferType.SEND;
+            case SEND:
+                this.transfer_type = 2;
                 break;
         }
     }
 
-    public void setTransfer_status(int transfer_status_id) {
-        switch (transfer_status_id) {
-            case 1:
-                this.transfer_status = TransferStatus.PENDING;
+    public void setTransfer_status(TransferStatus transfer_status) {
+        switch (transfer_status) {
+            case PENDING:
+                this.transfer_status = 1;
                 break;
-            case 2:
-                this.transfer_status = TransferStatus.APPROVED;
+            case APPROVED:
+                this.transfer_status = 2;
                 break;
-            case 3:
-                this.transfer_status = TransferStatus.REJECTED;
+            case REJECTED:
+                this.transfer_status = 3;
                 break;
         }
     }

@@ -1,14 +1,13 @@
 package com.techelevator.tenmo;
 
-import com.techelevator.tenmo.model.AuthenticatedUser;
-import com.techelevator.tenmo.model.Transfer;
-import com.techelevator.tenmo.model.TransferType;
-import com.techelevator.tenmo.model.UserCredentials;
+import com.techelevator.tenmo.model.*;
 import com.techelevator.tenmo.services.AccountService;
 import com.techelevator.tenmo.services.AuthenticationService;
 import com.techelevator.tenmo.services.ConsoleService;
+import com.techelevator.tenmo.services.UserService;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 public class App {
 
@@ -17,6 +16,7 @@ public class App {
     private final ConsoleService consoleService = new ConsoleService();
     private final AuthenticationService authenticationService = new AuthenticationService(API_BASE_URL);
     private final AccountService accountService = new AccountService(API_BASE_URL);
+    private final UserService userService = new UserService(API_BASE_URL);
 
     private AuthenticatedUser currentUser;
 
@@ -65,6 +65,7 @@ public class App {
             consoleService.printErrorMessage();
         } else {
             accountService.setAuthToken(currentUser.getToken());
+            userService.setAuthToken(currentUser.getToken());
         }
     }
 
@@ -93,7 +94,6 @@ public class App {
     }
 
 	private void viewCurrentBalance() {
-		// TODO Auto-generated method stub
 		BigDecimal balance = accountService.getCurrentBalance(currentUser.getUser().getId());
         consoleService.printBalance(balance);
 	}
@@ -109,8 +109,51 @@ public class App {
 	}
 
 	private void sendBucks() {
+        List<User> userList = userService.getAllUsers();
 
-		
+        int maxSelection = userList.size();
+        int userSelection = -1;
+        while (userSelection != 0) {
+            consoleService.printAllUsers(userList);
+
+            userSelection = consoleService.promptForMenuSelection("Please select a user... ");
+
+            if (userSelection > 0 && userSelection <= maxSelection) {
+                User user = userList.get(userSelection - 1);
+                if (user.equals(currentUser.getUser())) {
+                    System.out.println("You can't send money to yourself!");
+                    continue;
+                }
+
+                BigDecimal currentBalance = accountService.getCurrentBalance(currentUser.getUser().getId());
+
+                BigDecimal amountToTransfer = BigDecimal.ZERO;
+                while (amountToTransfer.compareTo(BigDecimal.ONE) < 0) {
+                    amountToTransfer = consoleService.promptForBigDecimal("Please enter an amount to transfer");
+
+                    if (amountToTransfer.compareTo(currentBalance) >= 0) {
+                        System.out.println("Insignificant funds!");
+                        amountToTransfer = BigDecimal.ZERO;
+                    }
+                }
+
+                Transfer newTransfer = new Transfer();
+
+                newTransfer.setAccount_from(currentUser.getUser().getId());
+                newTransfer.setAccount_to(user.getId());
+                newTransfer.setTransfer_status(TransferStatus.APPROVED);
+                newTransfer.setTransfer_type(TransferType.SEND);
+                newTransfer.setTransferAmount(amountToTransfer);
+
+
+                Transfer transfer = accountService.sendBucks(newTransfer);
+
+            } else if (userSelection != 0) {
+                System.out.println("Invalid selection");
+            }
+
+        }
+
 	}
 
 	private void requestBucks() {
