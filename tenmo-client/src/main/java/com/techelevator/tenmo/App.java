@@ -4,6 +4,7 @@ import com.techelevator.tenmo.model.*;
 import com.techelevator.tenmo.services.*;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 public class App {
@@ -99,7 +100,7 @@ public class App {
 	}
 
 	private void viewTransferHistory() {
-        Transfer[] transferHistory = transferService.getTransferHistory(userAccount.getAccount_id());
+        Transfer[] transferHistory = transferService.getTransferHistory(userAccount.getAccount_id(), TransferStatus.APPROVED);
         if (transferHistory != null){
             consoleService.printTransferHistory(transferHistory, userAccount.getAccount_id());
         } else {
@@ -113,8 +114,19 @@ public class App {
 	}
 
 	private void viewPendingRequests() {
-		// TODO Auto-generated method stub
-		
+        List<Transfer> userRequests = transferService.getSentRequests(userAccount.getAccount_id());
+        if (userRequests.size() != 0 ) {
+            consoleService.printUserRequests(userRequests);
+        }
+
+        List<Transfer> pendingTransfers = transferService.getPendingTransfers(userAccount.getAccount_id());
+        if (pendingTransfers.size() != 0) {
+            consoleService.printPendingTransfers(pendingTransfers);
+        }
+
+        if (userRequests.size() == 0 && pendingTransfers.size() == 0) {
+            System.out.println("No pending transfers found!");
+        }
 	}
 
 	private void sendBucks() {
@@ -125,7 +137,7 @@ public class App {
             return;
         }
 
-        BigDecimal amountToTransfer = getAmountFromUser(userAccount);
+        BigDecimal amountToTransfer = getAmountFromUser(TransferType.SEND);
 
         if (amountToTransfer.equals(BigDecimal.ZERO)) {
             System.out.println("Cancelling transaction...");
@@ -155,7 +167,36 @@ public class App {
 	}
 
 	private void requestBucks() {
+        Account toAccount = selectAnAccountForTransfer();
 
+        if (toAccount == null) {
+            System.out.println("Exiting...");
+            return;
+        }
+
+        BigDecimal amountToRequest = getAmountFromUser(TransferType.REQUEST);
+
+        if (amountToRequest.equals(BigDecimal.ZERO)) {
+            System.out.println("Cancelling request...");
+            return;
+        }
+
+        Transfer newTransfer = new Transfer();
+
+        newTransfer.setAccount_from(userAccount);
+        newTransfer.setAccount_to(toAccount);
+        newTransfer.setTransfer_status_id(TransferStatus.PENDING);
+        newTransfer.setTransfer_type_id(TransferType.REQUEST);
+        newTransfer.setAmount(amountToRequest);
+
+        Transfer transfer = transferService.createNewTransfer(newTransfer);
+
+        if (transfer != null) {
+            System.out.println("Successfully requested $" + transfer.getAmount()
+                    + " from: " + transfer.getAccount_to().getUser().getUsername());
+        } else {
+            System.out.println("There was an issue sending a transfer...Please try later");
+        }
 		
 	}
 
@@ -184,7 +225,7 @@ public class App {
         return null;
     }
 
-    private BigDecimal getAmountFromUser(Account userAccount) {
+    private BigDecimal getAmountFromUser(TransferType transferType) {
         BigDecimal currentBalance = userAccount.getBalance();
 
         BigDecimal amountToTransfer = BigDecimal.valueOf(-1);
@@ -196,7 +237,7 @@ public class App {
                 continue;
             }
 
-            if (amountToTransfer.compareTo(currentBalance) >= 0) {
+            if (amountToTransfer.compareTo(currentBalance) >= 0 && transferType.equals(TransferType.SEND)) {
                 System.out.println("Insignificant funds!");
                 amountToTransfer = BigDecimal.valueOf(-1);
                 continue;

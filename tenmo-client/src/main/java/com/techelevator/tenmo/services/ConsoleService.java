@@ -109,17 +109,47 @@ public class ConsoleService {
 
     public void printTransferHistory (Transfer[] transfers, Long account_id) {
         System.out.println("---------------------------------------------------");
-        System.out.printf("%28s", "Transfers\n");
-        System.out.printf("%-17s %-10s %22s", "ID", "From / To", "Amount\n");
+        System.out.printf("%28s\n", "Transfers");
+        System.out.printf("%-17s %-10s %22s", "ID", "From / To", "Amount");
         System.out.println("---------------------------------------------------");
         for (Transfer transfer : transfers) {
             System.out.println(transfer.getAccountSummary(account_id));
         }
     }
 
+    public void printUserRequests(List<Transfer> transfers) {
+        System.out.println();
+        System.out.println("---------------------------------------------------");
+        System.out.printf("%28s\n", "Sent Requests");
+        System.out.printf("%-17s %-7s %25s\n", "ID", "To", "Amount");
+        System.out.println("---------------------------------------------------");
+        for (Transfer transfer : transfers) {
+            long accountId = transfer.getAccount_to().getAccount_id();
+            String username = transfer.getAccount_to().getUser().getUsername();
+            BigDecimal amount = transfer.getAmount();
+            System.out.printf("%-17s %-23s %2s %-8s\n", accountId, username, "$",amount);
+        }
+        System.out.println();
+    }
+
+    public void printPendingTransfers(List<Transfer> transfers) {
+        System.out.println();
+        System.out.println("---------------------------------------------------");
+        System.out.printf("%28s\n", "Pending Requests");
+        System.out.printf("%-17s %-10s %22s\n", "ID", "From", "Amount");
+        System.out.println("---------------------------------------------------");
+        for (Transfer transfer : transfers) {
+            long accountId = transfer.getAccount_from().getAccount_id();
+            String username = transfer.getAccount_from().getUser().getUsername();
+            BigDecimal amount = transfer.getAmount();
+            System.out.printf("%-17s %-23s %2s %-8s\n", accountId, username, "$",amount);
+        }
+        System.out.println();
+    }
+
     public void printTransferDetails (Transfer transfer) {
         System.out.println("--------------------------------------------");
-        System.out.println("Transfer Details");
+        System.out.printf("%28s\n", "Transfer Details");
         System.out.println("--------------------------------------------");
         System.out.println(transfer.toString());
     }

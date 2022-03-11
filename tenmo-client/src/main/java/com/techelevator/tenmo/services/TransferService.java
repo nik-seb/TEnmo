@@ -1,11 +1,14 @@
 package com.techelevator.tenmo.services;
 
 import com.techelevator.tenmo.model.Transfer;
+import com.techelevator.tenmo.model.TransferStatus;
 import com.techelevator.util.BasicLogger;
 import org.springframework.http.*;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.client.RestTemplate;
+
+import java.util.List;
 
 public class TransferService {
 
@@ -41,7 +44,7 @@ public class TransferService {
         return transfer;
     }
 
-    public Transfer[] getTransferHistory(Long accountId) {
+    public Transfer[] getTransferHistory(Long accountId, TransferStatus transfer_status) {
         Transfer[] transferList = null;
 
         HttpHeaders headers = new HttpHeaders();
@@ -51,8 +54,50 @@ public class TransferService {
 
         try {
             ResponseEntity<Transfer[]> response =
-                    restTemplate.exchange(baseUrl + "/api/accounts/" + accountId + "/transfers", HttpMethod.GET, entity, Transfer[].class);
+                    restTemplate.exchange(baseUrl + "/api/accounts/" + accountId + "/transfers/" + transfer_status.getValue(), HttpMethod.GET, entity, Transfer[].class);
             transferList = response.getBody();
+        } catch (RestClientResponseException | ResourceAccessException e) {
+            BasicLogger.log(e.getMessage());
+        }
+        return transferList;
+    }
+
+    public List<Transfer> getPendingTransfers(Long accountId) {
+        List<Transfer> transferList = null;
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth(authToken);
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<Transfer> entity = new HttpEntity<>(headers);
+
+        try {
+            ResponseEntity<Transfer[]> response =
+                    restTemplate.exchange(baseUrl + "/api/accounts/" + accountId + "/transfers/pending", HttpMethod.GET, entity, Transfer[].class);
+
+            if (response.getBody() != null) {
+                transferList = List.of(response.getBody());
+            }
+        } catch (RestClientResponseException | ResourceAccessException e) {
+            BasicLogger.log(e.getMessage());
+        }
+        return transferList;
+    }
+
+    public List<Transfer> getSentRequests(Long accountId) {
+        List<Transfer> transferList = null;
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth(authToken);
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<Transfer> entity = new HttpEntity<>(headers);
+
+        try {
+            ResponseEntity<Transfer[]> response =
+                    restTemplate.exchange(baseUrl + "/api/accounts/" + accountId + "/transfers/sent", HttpMethod.GET, entity, Transfer[].class);
+
+            if (response.getBody() != null) {
+                transferList = List.of(response.getBody());
+            }
         } catch (RestClientResponseException | ResourceAccessException e) {
             BasicLogger.log(e.getMessage());
         }
