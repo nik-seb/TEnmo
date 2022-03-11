@@ -21,27 +21,37 @@ public class TransferController {
     }
 
     /**
-     * List of Transfers by Account ID
+     * GET - List of Transfers by Account ID
      * @param accountID - the accountID of the current user
      * @return all transfers for a given account
      */
-    @RequestMapping(value = "/accounts/{id}/transfers", method = RequestMethod.GET)
-    public List<Transfer> listTransfers(@PathVariable("id") int accountID) {
-        return transferDao.listTransfers(accountID);
+    @RequestMapping(value = "/accounts/{id}/transfers/{status}", method = RequestMethod.GET)
+    public List<Transfer> listTransfers(@PathVariable("id") int accountID, @PathVariable int status) {
+        return transferDao.listTransfers(accountID, status);
     }
 
     /**
-     * List of Pending Transfers by Account ID
-     * @param accountID - the accountID of the current user
-     * @return all the pending transfers for a given account
+     * GET - List of Transfers with Status of Pending TO account
+     * @param id - accountID
+     * @return all pending transfers TO account
      */
     @RequestMapping(value = "/accounts/{id}/transfers/pending", method = RequestMethod.GET)
-    public List<Transfer> pendingTransfers(@PathVariable("id") int accountID) {
-        return transferDao.pendingTransfers(accountID);
+    public List<Transfer> getPendingTransfers(@PathVariable int id) {
+        return transferDao.getPendingTransfers(id);
     }
 
     /**
-     * Transfer from transfer_id
+     * GET - List of Transfers with Status of Pending FROM account
+     * @param id - accountId
+     * @return all pending transfers FROM account
+     */
+    @RequestMapping(value = "/accounts/{id}/transfers/sent", method = RequestMethod.GET)
+    public List<Transfer> getSentRequests(@PathVariable int id) {
+        return transferDao.getSentRequests(id);
+    }
+
+    /**
+     * GET - Transfer from transfer_id
      * @param id - transfer_id
      * @return a single transfer from a given transfer_id
      */
@@ -51,7 +61,7 @@ public class TransferController {
     }
 
     /**
-     * Create a new transfer
+     * POST - Create a new transfer
      * @param transfer - Transfer object
      * @return the Transfer object with the new transfer_id
      */
@@ -62,7 +72,7 @@ public class TransferController {
     }
 
     /**
-     * Update Transfer Approval
+     * PUT - Update Transfer Approval
      * @param transfer - Transfer object
      * @param id - transfer_id to update
      * @return the newly updated Transfer object

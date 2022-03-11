@@ -102,7 +102,6 @@ public class AccountService {
     }
 
     public Transfer sendBucks(Transfer transfer) {
-
         Account newAccountFrom = null;
         Account newAccountTo = null;
 
@@ -124,10 +123,6 @@ public class AccountService {
         }
 
         return transfer;
-    }
-
-    public void requestBucks() {
-        // TODO add this method
     }
 
     private Account sendMoney(Account account, BigDecimal amountToSend) {
