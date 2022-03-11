@@ -1,6 +1,7 @@
 package com.techelevator.tenmo.services;
 
 
+import com.techelevator.tenmo.model.Transfer;
 import com.techelevator.tenmo.model.User;
 import com.techelevator.tenmo.model.UserCredentials;
 
@@ -102,6 +103,31 @@ public class ConsoleService {
 
     public void printBalance(BigDecimal balance) {
         System.out.println("Your current balance is: " + balance);
+    }
+
+    public void printTransferHistory (Transfer[] transfers, Long account_id) {
+        System.out.println("------------------------------------------- \n" + "Transfers \n" +
+                "ID          From/To                 Amount \n" +
+                "-------------------------------------------");
+        for (Transfer transfer : transfers) {
+            String toOrFrom = transfer.getAccount_from().getAccount_id() == account_id ? "From: " : "To:    ";
+            String output = transfer.getTransfer_id() + "          " + toOrFrom + account_id + "          " +
+                    "$ " + transfer.getAmount();
+            System.out.println(output);
+        }
+        System.out.print("Please enter transfer ID to view details (0 to cancel): ");
+    }
+
+    public void printTransferDetails (Transfer transfer) {
+        System.out.println("--------------------------------------------");
+        System.out.println("Transfer Details");
+        System.out.println("--------------------------------------------");
+        System.out.println("Id: " + transfer.getTransfer_id());
+        System.out.println("From: "); // TODO here and below, get actual user names
+        System.out.println("To: ");
+        System.out.println("Type: " + transfer.getTransfer_type_id()); // TODO here and below, get description instead of id
+        System.out.println("Status: " + transfer.getTransfer_status_id());
+        System.out.println("Amount: $" + transfer.getAmount());
     }
 
 }

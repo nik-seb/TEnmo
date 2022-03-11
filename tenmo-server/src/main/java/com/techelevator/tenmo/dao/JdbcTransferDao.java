@@ -21,14 +21,19 @@ public class JdbcTransferDao implements TransferDao{
     @Override
     public List<Transfer> listTransfers(int account_id) {
         List<Transfer> transferList = new ArrayList<>();
-        String sqlGetTransfers = "SELECT transfer_id, transfer_type_id, transfer_status_id, account_from, account_to, amount " +
-                "FROM transfer WHERE account_from = ?;";
-        SqlRowSet result = jdbcTemplate.queryForRowSet(sqlGetTransfers, account_id);
+        String sqlGetTransfers = "SELECT transfer_id, transfer_type_id, transfer_status_id, amount, " +
+                "a.account_id as account_from_id, a.user_id as account_from_user_id, a.balance as account_from_balance, " +
+                "ab.account_id as account_to_id, ab.user_id as account_to_user_id, ab.balance as account_to_balance " +
+                "FROM transfer " +
+                "JOIN account a ON (account_from = a.account_id) " +
+                "JOIN account ab ON (account_to = ab.account_id) " +
+                "WHERE (a.account_id = ? OR ab.account_id = ?) AND transfer_status_id = 2;";
+        SqlRowSet result = jdbcTemplate.queryForRowSet(sqlGetTransfers, account_id, account_id);
         while (result.next()) {
             Transfer transfer = mapRowSetToTransfer(result);
             transferList.add(transfer);
         }
-        return null;
+        return transferList;
     }
 
     @Override
