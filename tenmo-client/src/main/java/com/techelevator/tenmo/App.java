@@ -97,12 +97,18 @@ public class App {
 	}
 
 	private void viewTransferHistory() {
-		// TODO Auto-generated method stub
-        TransferType transferType = TransferType.REQUEST;
-
-        System.out.println(transferType);
-        System.out.println(transferType.getValue());
-		
+        Account userAccount = accountService.getAccountById(currentUser.getUser().getId());
+        Transfer[] transferHistory = accountService.getTransferHistory(userAccount.getAccount_id());
+        if (transferHistory != null){
+            consoleService.printTransferHistory(transferHistory, userAccount.getAccount_id());
+        } else {
+            System.out.println("No transfers were found for this user.");
+        }
+        int selection = consoleService.promptForInt("Please enter transfer ID to view details (0 to cancel): ");
+        if (selection != 0) {
+            Transfer selectedTransfer = accountService.getTransferById((long) selection);
+            consoleService.printTransferDetails(selectedTransfer);
+        }
 	}
 
 	private void viewPendingRequests() {
