@@ -6,6 +6,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @RestController
 @PreAuthorize("isAuthenticated()")
@@ -30,6 +31,11 @@ public class AccountController {
     @RequestMapping (value = "/api/accounts/{id}", method = RequestMethod.GET)
     public Account getAccountById(@PathVariable Long id) {
         return accountDao.getAccountById(id);
+    }
+
+    @RequestMapping (value = "/api/accounts", method = RequestMethod.GET)
+    public List<Account> getAllAccounts() {
+        return accountDao.getAllAccounts();
     }
 
 }

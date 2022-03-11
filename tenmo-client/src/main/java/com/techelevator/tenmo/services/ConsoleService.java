@@ -1,6 +1,7 @@
 package com.techelevator.tenmo.services;
 
 
+import com.techelevator.tenmo.model.Account;
 import com.techelevator.tenmo.model.User;
 import com.techelevator.tenmo.model.UserCredentials;
 
@@ -48,15 +49,16 @@ public class ConsoleService {
         System.out.println();
     }
 
-    public void printAllUsers(List<User> userList) {
+    public void printAllUsers(List<Account> accountList) {
         System.out.println();
-        for (int i = 0; i < userList.size(); i += 1) {
+        for (int i = 0; i < accountList.size(); i += 1) {
             System.out.print(i + 1);
-            System.out.println(": " + userList.get(i).getUsername());
+            System.out.println(": " + accountList.get(i).getUser().getUsername());
         }
         System.out.println("0: Exit");
         System.out.println("");
     }
+
 
     public UserCredentials promptForCredentials() {
         String username = promptForString("Username: ");
