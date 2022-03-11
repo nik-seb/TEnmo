@@ -78,8 +78,8 @@ public class TransferController {
      * @return the newly updated Transfer object
      */
     @RequestMapping(value = "/transfers/{id}", method = RequestMethod.PUT)
-    public Transfer transferApproval(@RequestBody Transfer transfer, @PathVariable int id) {
-        return transferDao.transferApproval(transfer, id);
+    public Transfer updateTransferApproval(@RequestBody Transfer transfer, @PathVariable int id) {
+        return transferDao.updateTransferApproval(transfer, id);
     }
 
 }

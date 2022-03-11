@@ -133,10 +133,14 @@ public class JdbcTransferDao implements TransferDao{
     }
 
     @Override
-    public Transfer transferApproval(Transfer transfer, int transfer_id) {
-        // TODO implement method
-
-        return null;
+    public Transfer updateTransferApproval(Transfer transfer, int transfer_id) {
+        Transfer updatedTransfer = null;
+        String sqlUpdateTransfer = "UPDATE transfer SET transfer_status_id = ? WHERE transfer_id = ?;";
+        int rowsUpdated = jdbcTemplate.update(sqlUpdateTransfer, transfer.getTransfer_status_id(), transfer_id);
+        if (rowsUpdated == 1) {
+            updatedTransfer = transfer;
+        }
+        return updatedTransfer;
     }
 
     private Transfer mapRowSetToTransfer (SqlRowSet rowSet) {
