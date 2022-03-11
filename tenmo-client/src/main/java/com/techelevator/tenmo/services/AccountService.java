@@ -9,6 +9,7 @@ import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.client.RestTemplate;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 public class AccountService {
 
@@ -60,8 +61,41 @@ public class AccountService {
         return account;
     }
 
-    public void getTransferHistory() {
-        // TODO add this method
+    public Transfer[] getTransferHistory(Long accountId) {
+        Transfer[] transferList = null;
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth(authToken);
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<Void> entity = new HttpEntity<>(headers);
+
+        try {
+            ResponseEntity<Transfer[]> response =
+                    restTemplate.exchange(baseUrl + "/api/accounts/" + accountId + "/transfers", HttpMethod.GET, entity, Transfer[].class);
+            transferList = response.getBody();
+        } catch (RestClientResponseException | ResourceAccessException e) {
+            BasicLogger.log(e.getMessage());
+        }
+        return transferList;
+    }
+
+    public Transfer getTransferById(Long transferId) {
+        Transfer transfer = null;
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth(authToken);
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<Transfer> entity = new HttpEntity<>(headers);
+
+        try {
+            ResponseEntity<Transfer> response =
+                    restTemplate.exchange(baseUrl + "api/transfers/" + transferId, HttpMethod.GET, entity, Transfer.class);
+            transfer = response.getBody();
+        } catch (RestClientResponseException | ResourceAccessException e) {
+            BasicLogger.log(e.getMessage());
+        }
+
+        return transfer;
     }
 
     public void getPendingRequests() {

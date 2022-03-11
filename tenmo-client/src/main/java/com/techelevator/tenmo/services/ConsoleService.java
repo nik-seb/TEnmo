@@ -1,6 +1,7 @@
 package com.techelevator.tenmo.services;
 
 
+import com.techelevator.tenmo.model.Transfer;
 import com.techelevator.tenmo.model.User;
 import com.techelevator.tenmo.model.UserCredentials;
 
@@ -102,6 +103,40 @@ public class ConsoleService {
 
     public void printBalance(BigDecimal balance) {
         System.out.println("Your current balance is: " + balance);
+    }
+
+    public void printTransferHistory (Transfer[] transfers, Long account_id) {
+        System.out.println("------------------------------------------- \n" + "Transfers \n" +
+                "ID          From/To                 Amount \n" +
+                "-------------------------------------------");
+        for (Transfer transfer : transfers) {
+            long accountFromId = transfer.getAccount_from().getAccount_id(); // TODO here and below, get username instead of id
+            long accountToId = transfer.getAccount_to().getAccount_id();
+            String toOrFrom;
+            /* TODO fix toOrFrom: currently results in to: 2002 and from: 2002
+            even though "from: " + accountFromId + " to: " + accountToId works as expected
+            */
+            if (accountFromId == account_id) {
+                toOrFrom = "To: " + accountToId;
+            } else {
+                toOrFrom = "From: " + accountFromId;
+            }
+            String output = transfer.getTransfer_id() + "          " + toOrFrom + "          " +
+                    "$ " + transfer.getAmount();
+            System.out.println(output);
+        }
+    }
+
+    public void printTransferDetails (Transfer transfer) {
+        System.out.println("--------------------------------------------");
+        System.out.println("Transfer Details");
+        System.out.println("--------------------------------------------");
+        System.out.println("Id: " + transfer.getTransfer_id());
+        System.out.println("From: " + transfer.getAccount_from().getAccount_id()); // TODO here and below, get actual user names
+        System.out.println("To: " + transfer.getAccount_to().getAccount_id());
+        System.out.println("Type: " + transfer.getTransfer_type_id()); // TODO here and below, get description instead of id
+        System.out.println("Status: " + transfer.getTransfer_status_id());
+        System.out.println("Amount: $" + transfer.getAmount());
     }
 
 }
