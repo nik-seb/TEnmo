@@ -106,18 +106,10 @@ public class App {
             System.out.println("No transfers were found for this user.");
         }
         int selection = consoleService.promptForInt("Please enter transfer ID to view details (0 to cancel): ");
-        if (selection == 0) {
-            return;
-        } else {
+        if (selection != 0) {
             Transfer selectedTransfer = accountService.getTransferById((long) selection);
-
+            consoleService.printTransferDetails(selectedTransfer);
         }
-
-        TransferType transferType = TransferType.REQUEST;
-
-        System.out.println(transferType);
-        System.out.println(transferType.getValue());
-		
 	}
 
 	private void viewPendingRequests() {

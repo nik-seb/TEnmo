@@ -110,12 +110,21 @@ public class ConsoleService {
                 "ID          From/To                 Amount \n" +
                 "-------------------------------------------");
         for (Transfer transfer : transfers) {
-            String toOrFrom = transfer.getAccount_from().getAccount_id() == account_id ? "From: " : "To:    ";
-            String output = transfer.getTransfer_id() + "          " + toOrFrom + account_id + "          " +
+            long accountFromId = transfer.getAccount_from().getAccount_id(); // TODO here and below, get username instead of id
+            long accountToId = transfer.getAccount_to().getAccount_id();
+            String toOrFrom;
+            /* TODO fix toOrFrom: currently results in to: 2002 and from: 2002
+            even though "from: " + accountFromId + " to: " + accountToId works as expected
+            */
+            if (accountFromId == account_id) {
+                toOrFrom = "To: " + accountToId;
+            } else {
+                toOrFrom = "From: " + accountFromId;
+            }
+            String output = transfer.getTransfer_id() + "          " + toOrFrom + "          " +
                     "$ " + transfer.getAmount();
             System.out.println(output);
         }
-        System.out.print("Please enter transfer ID to view details (0 to cancel): ");
     }
 
     public void printTransferDetails (Transfer transfer) {
@@ -123,8 +132,8 @@ public class ConsoleService {
         System.out.println("Transfer Details");
         System.out.println("--------------------------------------------");
         System.out.println("Id: " + transfer.getTransfer_id());
-        System.out.println("From: "); // TODO here and below, get actual user names
-        System.out.println("To: ");
+        System.out.println("From: " + transfer.getAccount_from().getAccount_id()); // TODO here and below, get actual user names
+        System.out.println("To: " + transfer.getAccount_to().getAccount_id());
         System.out.println("Type: " + transfer.getTransfer_type_id()); // TODO here and below, get description instead of id
         System.out.println("Status: " + transfer.getTransfer_status_id());
         System.out.println("Amount: $" + transfer.getAmount());
