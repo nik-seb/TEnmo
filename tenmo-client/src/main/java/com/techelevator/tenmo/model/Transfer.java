@@ -10,6 +10,42 @@ public class Transfer {
     private Account account_to;
     private BigDecimal amount;
 
+    public TransferType getTransferTypeFromId(int transfer_type_id) {
+        switch (transfer_type_id) {
+            case 1:
+                return TransferType.REQUEST;
+            case 2:
+                return TransferType.SEND;
+        }
+
+        return null;
+    }
+
+    public TransferStatus getTransferStatusFromId(int transfer_status_id) {
+        switch (transfer_status_id) {
+            case 1:
+                return TransferStatus.PENDING;
+            case 2:
+                return TransferStatus.APPROVED;
+            case 3:
+                return TransferStatus.REJECTED;
+        }
+
+        return null;
+    }
+
+    public String getTransferStatusAsString() {
+        String transferStatusName = getTransferStatusFromId(this.transfer_status_id).name().toLowerCase();
+
+        return transferStatusName.substring(0, 1).toUpperCase() + transferStatusName.substring(1);
+    }
+
+    public String getTransferTypeAsString() {
+        String transferTypeName = getTransferTypeFromId(this.transfer_type_id).name().toLowerCase();
+
+        return transferTypeName.substring(0, 1).toUpperCase() + transferTypeName.substring(1);
+    }
+
     public int getTransfer_type_id() {
         return transfer_type_id;
     }
@@ -68,7 +104,22 @@ public class Transfer {
 
     @Override
     public String toString() {
-        // TODO add in toString method
-        return "Transfer{}";
+        return "ID: " + getTransfer_id() +
+                "\nFrom: " + getAccount_from().getUser().getUsername() +
+                "\nTo: " + getAccount_to().getUser().getUsername() +
+                "\nType: " + getTransferTypeAsString() +
+                "\nStatus: " + getTransferStatusAsString() +
+                "\nAmount: " + getAmount().toString();
+    }
+
+    public String getAccountSummary(Long account_id) {
+        String fromOrTo = "";
+        if (account_id == this.account_from.getAccount_id()) {
+            fromOrTo = "To: " + this.account_to.getUser().getUsername();
+        } else {
+            fromOrTo = "From: " + this.account_from.getUser().getUsername();
+        }
+
+        return String.format("%-17s %-23s %2s %-8s", this.getTransfer_id(), fromOrTo, "$", this.getAmount());
     }
 }

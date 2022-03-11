@@ -2,6 +2,7 @@ package com.techelevator.tenmo.services;
 
 import com.techelevator.tenmo.model.Account;
 import com.techelevator.tenmo.model.Transfer;
+import com.techelevator.tenmo.model.User;
 import com.techelevator.util.BasicLogger;
 import org.springframework.http.*;
 import org.springframework.web.client.ResourceAccessException;
@@ -9,6 +10,7 @@ import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.client.RestTemplate;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 public class AccountService {
@@ -61,64 +63,28 @@ public class AccountService {
         return account;
     }
 
-    public Transfer[] getTransferHistory(Long accountId) {
-        Transfer[] transferList = null;
+    public List<Account> getAllAccounts() {
+        List<Account> accounts = new ArrayList<>();
 
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(authToken);
-        headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<Void> entity = new HttpEntity<>(headers);
 
         try {
-            ResponseEntity<Transfer[]> response =
-                    restTemplate.exchange(baseUrl + "/api/accounts/" + accountId + "/transfers", HttpMethod.GET, entity, Transfer[].class);
-            transferList = response.getBody();
-        } catch (RestClientResponseException | ResourceAccessException e) {
-            BasicLogger.log(e.getMessage());
-        }
-        return transferList;
-    }
-
-    public Transfer getTransferById(Long transferId) {
-        Transfer transfer = null;
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.setBearerAuth(authToken);
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        HttpEntity<Transfer> entity = new HttpEntity<>(headers);
-
-        try {
-            ResponseEntity<Transfer> response =
-                    restTemplate.exchange(baseUrl + "api/transfers/" + transferId, HttpMethod.GET, entity, Transfer.class);
-            transfer = response.getBody();
+            ResponseEntity<Account[]> response =
+                    restTemplate.exchange(baseUrl + "api/accounts", HttpMethod.GET, entity, Account[].class);
+            if (response.getBody() != null) {
+                accounts = List.of(response.getBody());
+            }
         } catch (RestClientResponseException | ResourceAccessException e) {
             BasicLogger.log(e.getMessage());
         }
 
-        return transfer;
+        return accounts;
     }
 
     public void getPendingRequests() {
         // TODO add this method
-    }
-
-    public Transfer createNewTransfer(Transfer newTransfer) {
-        Transfer transfer = null;
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.setBearerAuth(authToken);
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        HttpEntity<Transfer> entity = new HttpEntity<>(newTransfer, headers);
-
-        try {
-            ResponseEntity<Transfer> response =
-                    restTemplate.exchange(baseUrl + "api/transfers", HttpMethod.POST, entity, Transfer.class);
-            transfer = response.getBody();
-        } catch (RestClientResponseException | ResourceAccessException e) {
-            BasicLogger.log(e.getMessage());
-        }
-
-        return transfer;
     }
 
     public void updateAccount(Account accountToUpdate) {
@@ -129,14 +95,13 @@ public class AccountService {
 
         try {
             ResponseEntity<Account> response =
-                    restTemplate.exchange(baseUrl + "api/accounts/" + accountToUpdate.getUser_id(), HttpMethod.PUT, entity, Account.class);
+                    restTemplate.exchange(baseUrl + "api/accounts/" + accountToUpdate.getUser(), HttpMethod.PUT, entity, Account.class);
         } catch (RestClientResponseException | ResourceAccessException e) {
             BasicLogger.log(e.getMessage());
         }
     }
 
-    public Transfer sendBucks(Transfer newTransfer) {
-        Transfer transfer = createNewTransfer(newTransfer);
+    public Transfer sendBucks(Transfer transfer) {
 
         Account newAccountFrom = null;
         Account newAccountTo = null;

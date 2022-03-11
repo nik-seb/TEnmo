@@ -1,11 +1,14 @@
 package com.techelevator.tenmo.dao;
 
 import com.techelevator.tenmo.model.Account;
+import com.techelevator.tenmo.model.User;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 @Component
 public class JdbcAccountDao implements AccountDao {
@@ -38,7 +41,9 @@ public class JdbcAccountDao implements AccountDao {
 
     @Override
     public Account getAccountById(Long id) {
-        String sql =    "SELECT * FROM account WHERE user_id = ?;";
+        String sql =    "SELECT * FROM account " +
+                        "JOIN tenmo_user USING(user_id) " +
+                        "WHERE user_id = ?;";
         SqlRowSet result = jdbcTemplate.queryForRowSet(sql, id);
 
         Account returnedAccount = null;
@@ -49,12 +54,29 @@ public class JdbcAccountDao implements AccountDao {
         return returnedAccount;
     }
 
+    @Override
+    public List<Account> getAllAccounts() {
+        List<Account> accounts = new ArrayList<>();
+        String sql = "SELECT * FROM account JOIN tenmo_user USING(user_id);";
+        SqlRowSet results = jdbcTemplate.queryForRowSet(sql);
+        while(results.next()) {
+            Account account = mapRowSetToAccount(results);
+            accounts.add(account);
+        }
+        return accounts;
+    }
+
     private Account mapRowSetToAccount(SqlRowSet rowSet) {
          Account account = new Account();
 
          account.setAccount_id(rowSet.getLong("account_id"));
          account.setBalance(rowSet.getBigDecimal("balance"));
-         account.setUser_id(rowSet.getLong("user_id"));
+         User user = new User();
+         user.setId(rowSet.getLong("user_id"));
+         user.setUsername(rowSet.getString("username"));
+         user.setPassword(rowSet.getString("password_hash"));
+
+         account.setUser(user);
 
          return account;
     }
