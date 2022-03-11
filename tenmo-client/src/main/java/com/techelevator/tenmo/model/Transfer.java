@@ -41,7 +41,7 @@ public class Transfer {
     }
 
     public String getTransferTypeAsString() {
-        String transferTypeName = getTransferStatusFromId(this.transfer_type_id).name().toLowerCase();
+        String transferTypeName = getTransferTypeFromId(this.transfer_type_id).name().toLowerCase();
 
         return transferTypeName.substring(0, 1).toUpperCase() + transferTypeName.substring(1);
     }
@@ -108,7 +108,18 @@ public class Transfer {
                 "\nFrom: " + getAccount_from().getUser().getUsername() +
                 "\nTo: " + getAccount_to().getUser().getUsername() +
                 "\nType: " + getTransferTypeAsString() +
-                "\nStatus: " + getTransferTypeAsString() +
+                "\nStatus: " + getTransferStatusAsString() +
                 "\nAmount: " + getAmount().toString();
+    }
+
+    public String getAccountSummary(Long account_id) {
+        String fromOrTo = "";
+        if (account_id == this.account_from.getAccount_id()) {
+            fromOrTo = "To: " + this.account_to.getUser().getUsername();
+        } else {
+            fromOrTo = "From: " + this.account_from.getUser().getUsername();
+        }
+
+        return String.format("%-17s %-23s %2s %-8s", this.getTransfer_id(), fromOrTo, "$", this.getAmount());
     }
 }

@@ -83,12 +83,6 @@ public class AccountService {
         return accounts;
     }
 
-
-
-    public void getTransferHistory() {
-        // TODO add this method
-    }
-
     public void getPendingRequests() {
         // TODO add this method
     }

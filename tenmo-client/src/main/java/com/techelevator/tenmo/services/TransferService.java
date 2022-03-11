@@ -41,6 +41,24 @@ public class TransferService {
         return transfer;
     }
 
+    public Transfer[] getTransferHistory(Long accountId) {
+        Transfer[] transferList = null;
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth(authToken);
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<Transfer> entity = new HttpEntity<>(headers);
+
+        try {
+            ResponseEntity<Transfer[]> response =
+                    restTemplate.exchange(baseUrl + "/api/accounts/" + accountId + "/transfers", HttpMethod.GET, entity, Transfer[].class);
+            transferList = response.getBody();
+        } catch (RestClientResponseException | ResourceAccessException e) {
+            BasicLogger.log(e.getMessage());
+        }
+        return transferList;
+    }
+
     public Transfer createNewTransfer(Transfer newTransfer) {
         Transfer transfer = null;
 

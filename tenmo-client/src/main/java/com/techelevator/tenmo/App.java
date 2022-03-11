@@ -17,6 +17,7 @@ public class App {
     private final TransferService transferService = new TransferService(API_BASE_URL);
 
     private AuthenticatedUser currentUser;
+    private Account userAccount;
 
     public static void main(String[] args) {
         App app = new App();
@@ -65,6 +66,7 @@ public class App {
             accountService.setAuthToken(currentUser.getToken());
             userService.setAuthToken(currentUser.getToken());
             transferService.setAuthToken(currentUser.getToken());
+            userAccount = accountService.getAccountById(currentUser.getUser().getId());
         }
     }
 
@@ -97,8 +99,7 @@ public class App {
 	}
 
 	private void viewTransferHistory() {
-        Account userAccount = accountService.getAccountById(currentUser.getUser().getId());
-        Transfer[] transferHistory = accountService.getTransferHistory(userAccount.getAccount_id());
+        Transfer[] transferHistory = transferService.getTransferHistory(userAccount.getAccount_id());
         if (transferHistory != null){
             consoleService.printTransferHistory(transferHistory, userAccount.getAccount_id());
         } else {
@@ -106,7 +107,7 @@ public class App {
         }
         int selection = consoleService.promptForInt("Please enter transfer ID to view details (0 to cancel): ");
         if (selection != 0) {
-            Transfer selectedTransfer = accountService.getTransferById((long) selection);
+            Transfer selectedTransfer = transferService.getTransferById((long) selection);
             consoleService.printTransferDetails(selectedTransfer);
         }
 	}
@@ -123,8 +124,6 @@ public class App {
             System.out.println("Exiting...");
             return;
         }
-
-        Account userAccount = accountService.getAccountById(currentUser.getUser().getId());
 
         BigDecimal amountToTransfer = getAmountFromUser(userAccount);
 
