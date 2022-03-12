@@ -148,25 +148,30 @@ public class App {
             boolean isUpdated = false;
             switch (selectedAction) {
                 case 1:
-                    isUpdated = transferService.approveOrRejectTransfer(selectedTransferId, true);
-                    if (isUpdated) {
-                        Transfer returnedTransfer = accountService.sendBucks(transferToUpdate);
-                        if (returnedTransfer != null) {
-                            System.out.println("You have successfully sent the transfer.");
-                            System.out.println("Your new balance is: " + returnedTransfer.getAccount_from().getBalance());
+                    if (userAccount.getBalance().compareTo(transferToUpdate.getAmount()) >= 0) {
+                        isUpdated = transferService.approveOrRejectTransfer(selectedTransferId, true);
+                        if (isUpdated) {
+                            Transfer returnedTransfer = accountService.sendBucks(transferToUpdate);
+                            if (returnedTransfer != null) {
+                                System.out.println("You have successfully sent the transfer.");
+                                System.out.println("Your new balance is: " + returnedTransfer.getAccount_from().getBalance());
+                            } else {
+                                System.out.println("There has been a problem updating your balance.");
+                            }
                         } else {
-                            System.out.println("There has been a problem updating your balance.");
+                            System.out.println("Sorry, there's been a problem. The transfer was unsuccessful.");
                         }
+                    } else {
+                        System.out.println("You don't have sufficient balance to send that transfer.");
                     }
                     break;
                 case 2: isUpdated = transferService.approveOrRejectTransfer(selectedTransferId, false);
                     break;
                 default:
                     System.out.println("This transfer has not been approved or rejected.");
-                    return;
             }
             if (!isUpdated) {
-                System.out.println("Sorry, there's been a problem. No update has been made to this transfer.");
+                System.out.println("No update has been made to this transfer.");
             }
         }
 
