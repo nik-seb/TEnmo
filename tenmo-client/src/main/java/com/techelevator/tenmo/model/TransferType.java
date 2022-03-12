@@ -12,4 +12,9 @@ public enum TransferType {
     public int getValue() {
         return this.value;
     }
+
+    @Override
+    public String toString() {
+        return this.name().substring(0, 1).toUpperCase() + this.name().substring(1);
+    }
 }
