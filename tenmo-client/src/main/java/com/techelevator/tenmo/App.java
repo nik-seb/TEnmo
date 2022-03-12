@@ -83,9 +83,9 @@ public class App {
             } else if (menuSelection == 3) {
                 viewPendingRequests();
             } else if (menuSelection == 4) {
-                sendBucks();
+                sendOrRequestBucks(TransferType.SEND);
             } else if (menuSelection == 5) {
-                requestBucks();
+                sendOrRequestBucks(TransferType.REQUEST);
             } else if (menuSelection == 0) {
                 System.out.println("Exiting...");
             } else {
@@ -115,29 +115,30 @@ public class App {
 
 	private void viewPendingRequests() {
         List<Transfer> userRequests = transferService.getSentRequests(userAccount.getAccount_id());
-        if (userRequests.size() != 0 ) {
+        if (!userRequests.isEmpty()) {
             consoleService.printUserRequests(userRequests);
         }
 
         List<Transfer> pendingTransfers = transferService.getPendingTransfers(userAccount.getAccount_id());
-        if (pendingTransfers.size() != 0) {
+        if (!pendingTransfers.isEmpty()) {
             consoleService.printPendingTransfers(pendingTransfers);
         }
 
-        if (userRequests.size() == 0 && pendingTransfers.size() == 0) {
+        if (userRequests.isEmpty() && pendingTransfers.isEmpty()) {
             System.out.println("No pending transfers found!");
         }
 	}
 
-	private void sendBucks() {
+    private void sendOrRequestBucks(TransferType transferType) {
         Account toAccount = selectAnAccountForTransfer();
 
         if (toAccount == null) {
             System.out.println("Exiting...");
             return;
         }
+        String prompt = transferType.equals(TransferType.SEND) ? "transfer: " : "request: ";
 
-        BigDecimal amountToTransfer = getAmountFromUser(TransferType.SEND);
+        BigDecimal amountToTransfer = getAmountFromUser(transferType, "Please enter an amount to " + prompt);
 
         if (amountToTransfer.equals(BigDecimal.ZERO)) {
             System.out.println("Cancelling transaction...");
@@ -148,57 +149,28 @@ public class App {
 
         newTransfer.setAccount_from(userAccount);
         newTransfer.setAccount_to(toAccount);
-        newTransfer.setTransfer_status_id(TransferStatus.APPROVED);
-        newTransfer.setTransfer_type_id(TransferType.SEND);
+        newTransfer.setTransfer_status_id(transferType.equals(TransferType.SEND)
+                ? TransferStatus.APPROVED : TransferStatus.PENDING);
+        newTransfer.setTransfer_type_id(transferType);
         newTransfer.setAmount(amountToTransfer);
 
-
         Transfer transfer = transferService.createNewTransfer(newTransfer);
 
         if (transfer != null) {
-            Transfer returnedTransfer = accountService.sendBucks(transfer);
+            if (transferType.equals(TransferType.REQUEST)) {
+                System.out.println("Successfully requested $" + transfer.getAmount()
+                        + " from: " + transfer.getAccount_to().getUser().getUsername());
+            } else {
+                Transfer returnedTransfer = accountService.sendBucks(transfer);
 
-            BigDecimal newBalance = returnedTransfer.getAccount_from().getBalance();
+                BigDecimal newBalance = returnedTransfer.getAccount_from().getBalance();
 
-            System.out.println("Your new balance is: " + newBalance);
+                System.out.println("Your new balance is: " + newBalance);
+            }
         } else {
             System.out.println("There was an issue sending a transfer...Please try later");
         }
-	}
-
-	private void requestBucks() {
-        Account toAccount = selectAnAccountForTransfer();
-
-        if (toAccount == null) {
-            System.out.println("Exiting...");
-            return;
-        }
-
-        BigDecimal amountToRequest = getAmountFromUser(TransferType.REQUEST);
-
-        if (amountToRequest.equals(BigDecimal.ZERO)) {
-            System.out.println("Cancelling request...");
-            return;
-        }
-
-        Transfer newTransfer = new Transfer();
-
-        newTransfer.setAccount_from(userAccount);
-        newTransfer.setAccount_to(toAccount);
-        newTransfer.setTransfer_status_id(TransferStatus.PENDING);
-        newTransfer.setTransfer_type_id(TransferType.REQUEST);
-        newTransfer.setAmount(amountToRequest);
-
-        Transfer transfer = transferService.createNewTransfer(newTransfer);
-
-        if (transfer != null) {
-            System.out.println("Successfully requested $" + transfer.getAmount()
-                    + " from: " + transfer.getAccount_to().getUser().getUsername());
-        } else {
-            System.out.println("There was an issue sending a transfer...Please try later");
-        }
-		
-	}
+    }
 
     private Account selectAnAccountForTransfer() {
         List<Account> accountList = accountService.getAllAccounts();
@@ -225,12 +197,12 @@ public class App {
         return null;
     }
 
-    private BigDecimal getAmountFromUser(TransferType transferType) {
+    private BigDecimal getAmountFromUser(TransferType transferType, String prompt) {
         BigDecimal currentBalance = userAccount.getBalance();
 
         BigDecimal amountToTransfer = BigDecimal.valueOf(-1);
         while (amountToTransfer.compareTo(BigDecimal.ONE) <= 0) {
-            amountToTransfer = consoleService.promptForBigDecimal("Please enter an amount to transfer: ");
+            amountToTransfer = consoleService.promptForBigDecimal(prompt);
 
             if (amountToTransfer.compareTo(BigDecimal.valueOf(-1)) <= 0) {
                 System.out.println("Not a valid number!");

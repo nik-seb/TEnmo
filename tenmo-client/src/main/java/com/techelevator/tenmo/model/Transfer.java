@@ -102,6 +102,28 @@ public class Transfer {
         this.transfer_status_id = transferStatus.getValue();
     }
 
+    public String getAccountSummary(Long account_id) {
+        String fromOrTo = "";
+        if (account_id == this.account_from.getAccount_id()) {
+            fromOrTo = "To: " + this.account_to.getUser().getUsername();
+        } else {
+            fromOrTo = "From: " + this.account_from.getUser().getUsername();
+        }
+
+        return String.format("%-10s %-22s %2s %-10s", this.getTransfer_id(), fromOrTo, "$", this.getAmount());
+    }
+
+    public String getPendingSumamry(Boolean isFrom) {
+        String username;
+        if (isFrom) {
+            username = getAccount_from().getUser().getUsername();
+        } else {
+            username = getAccount_to().getUser().getUsername();
+        }
+        return String.format("%-10s %-22s %2s %10s", getTransfer_id(), username, "$", getAmount());
+    }
+
+
     @Override
     public String toString() {
         return "ID: " + getTransfer_id() +
@@ -112,14 +134,4 @@ public class Transfer {
                 "\nAmount: " + getAmount().toString();
     }
 
-    public String getAccountSummary(Long account_id) {
-        String fromOrTo = "";
-        if (account_id == this.account_from.getAccount_id()) {
-            fromOrTo = "To: " + this.account_to.getUser().getUsername();
-        } else {
-            fromOrTo = "From: " + this.account_from.getUser().getUsername();
-        }
-
-        return String.format("%-17s %-23s %2s %-8s", this.getTransfer_id(), fromOrTo, "$", this.getAmount());
-    }
 }

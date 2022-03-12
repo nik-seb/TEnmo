@@ -1,10 +1,7 @@
 package com.techelevator.tenmo.services;
 
 
-import com.techelevator.tenmo.model.Account;
-import com.techelevator.tenmo.model.Transfer;
-import com.techelevator.tenmo.model.User;
-import com.techelevator.tenmo.model.UserCredentials;
+import com.techelevator.tenmo.model.*;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -26,9 +23,13 @@ public class ConsoleService {
     }
 
     public void printGreeting() {
-        System.out.println("*********************");
-        System.out.println("* Welcome to TEnmo! *");
-        System.out.println("*********************");
+        System.out.println();
+        System.out.println("            ████████ ███████ ███    ██ ███    ███  ██████            ");
+        System.out.println("               ██    ██      ████   ██ ████  ████ ██    ██           ");
+        System.out.println("  █████        ██    █████   ██ ██  ██ ██ ████ ██ ██    ██     █████ ");
+        System.out.println("               ██    ██      ██  ██ ██ ██  ██  ██ ██    ██           ");
+        System.out.println("               ██    ███████ ██   ████ ██      ██  ██████            ");
+        System.out.println();
     }
 
     public void printLoginMenu() {
@@ -108,50 +109,65 @@ public class ConsoleService {
     }
 
     public void printTransferHistory (Transfer[] transfers, Long account_id) {
-        System.out.println("---------------------------------------------------");
-        System.out.printf("%28s\n", "Transfers");
-        System.out.printf("%-17s %-10s %22s", "ID", "From / To", "Amount");
-        System.out.println("---------------------------------------------------");
+        String[] headings = new String[2];
+        headings[0] = String.format("%28s", "Transfers");
+        headings[1] = String.format("%-17s %-10s %15s", "ID", "From / To", "Amount");
+        printHeading(headings);
+
         for (Transfer transfer : transfers) {
             System.out.println(transfer.getAccountSummary(account_id));
         }
+
+        System.out.println("--------------------------------------------");
+        System.out.println();
     }
 
     public void printUserRequests(List<Transfer> transfers) {
-        System.out.println();
-        System.out.println("---------------------------------------------------");
-        System.out.printf("%28s\n", "Sent Requests");
-        System.out.printf("%-17s %-7s %25s\n", "ID", "To", "Amount");
-        System.out.println("---------------------------------------------------");
+        String[] headings = new String[2];
+        headings[0] = String.format("%28s", "Sent Requests");
+        headings[1] = String.format("%-17s %-7s %18s", "ID", "To", "Amount");
+        printHeading(headings);
+
         for (Transfer transfer : transfers) {
-            long accountId = transfer.getAccount_to().getAccount_id();
-            String username = transfer.getAccount_to().getUser().getUsername();
-            BigDecimal amount = transfer.getAmount();
-            System.out.printf("%-17s %-23s %2s %-8s\n", accountId, username, "$",amount);
+
+            System.out.println(transfer.getPendingSumamry(false));
         }
+
+        System.out.println("--------------------------------------------");
         System.out.println();
     }
 
     public void printPendingTransfers(List<Transfer> transfers) {
-        System.out.println();
-        System.out.println("---------------------------------------------------");
-        System.out.printf("%28s\n", "Pending Requests");
-        System.out.printf("%-17s %-10s %22s\n", "ID", "From", "Amount");
-        System.out.println("---------------------------------------------------");
+        String[] headings = new String[2];
+        headings[0] = String.format("%28s", "Pending Requests");
+        headings[1] = String.format("%-17s %-10s %14s", "ID", "From", "Amount");
+        printHeading(headings);
+
         for (Transfer transfer : transfers) {
-            long accountId = transfer.getAccount_from().getAccount_id();
-            String username = transfer.getAccount_from().getUser().getUsername();
-            BigDecimal amount = transfer.getAmount();
-            System.out.printf("%-17s %-23s %2s %-8s\n", accountId, username, "$",amount);
+            System.out.println(transfer.getPendingSumamry(true));
         }
+
+        System.out.println("--------------------------------------------");
         System.out.println();
     }
 
+
+
     public void printTransferDetails (Transfer transfer) {
-        System.out.println("--------------------------------------------");
-        System.out.printf("%28s\n", "Transfer Details");
-        System.out.println("--------------------------------------------");
+        String[] headings = {String.format("%" + 28 + "s", "Transfer Details")};
+        printHeading(headings);
+
         System.out.println(transfer.toString());
+        System.out.println("--------------------------------------------");
+    }
+
+    public void printHeading (String[] heading) {
+        System.out.println();
+        System.out.println("--------------------------------------------");
+        for (String string : heading) {
+            System.out.println(string);
+        }
+        System.out.println("--------------------------------------------");
     }
 
 }
