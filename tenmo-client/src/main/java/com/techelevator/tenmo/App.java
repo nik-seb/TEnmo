@@ -182,12 +182,13 @@ public class App {
 
     private void sendOrRequestBucks(TransferType transferType) {
         Account toAccount = selectAnAccountForTransfer();
+        boolean isRequest = transferType.equals(TransferType.REQUEST);
 
         if (toAccount == null) {
             System.out.println("Exiting...");
             return;
         }
-        String prompt = transferType.equals(TransferType.SEND) ? "transfer: " : "request: ";
+        String prompt = isRequest ? "request: " : "transfer: ";
 
         BigDecimal amountToTransfer = getAmountFromUser(transferType, "Please enter an amount to " + prompt);
 
@@ -198,19 +199,19 @@ public class App {
 
         Transfer newTransfer = new Transfer();
 
-        newTransfer.setAccount_from(userAccount);
-        newTransfer.setAccount_to(toAccount);
-        newTransfer.setTransfer_status_id(transferType.equals(TransferType.SEND)
-                ? TransferStatus.APPROVED : TransferStatus.PENDING);
+        newTransfer.setAccount_from(isRequest ? toAccount : userAccount);
+        newTransfer.setAccount_to(isRequest ? userAccount : toAccount);
+        newTransfer.setTransfer_status_id(isRequest
+                ? TransferStatus.PENDING : TransferStatus.APPROVED);
         newTransfer.setTransfer_type_id(transferType);
         newTransfer.setAmount(amountToTransfer);
 
         Transfer transfer = transferService.createNewTransfer(newTransfer);
 
         if (transfer != null) {
-            if (transferType.equals(TransferType.REQUEST)) {
+            if (isRequest) {
                 System.out.println("Successfully requested $" + transfer.getAmount()
-                        + " from: " + transfer.getAccount_to().getUser().getUsername());
+                        + " from: " + transfer.getAccount_from().getUser().getUsername());
             } else {
                 Transfer returnedTransfer = accountService.sendBucks(transfer);
 

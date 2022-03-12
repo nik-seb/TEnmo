@@ -25,9 +25,9 @@ public class TransferController {
      * @param accountID - the accountID of the current user
      * @return all transfers for a given account
      */
-    @RequestMapping(value = "/accounts/{id}/transfers/{status}", method = RequestMethod.GET)
-    public List<Transfer> listTransfers(@PathVariable("id") int accountID, @PathVariable int status) {
-        return transferDao.listTransfers(accountID, status);
+    @RequestMapping(value = "/accounts/{id}/transfers", method = RequestMethod.GET)
+    public List<Transfer> listTransfers(@PathVariable("id") int accountID) {
+        return transferDao.listTransfers(accountID);
     }
 
     /**

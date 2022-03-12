@@ -54,7 +54,7 @@ public class TransferService {
 
         try {
             ResponseEntity<Transfer[]> response =
-                    restTemplate.exchange(baseUrl + "/api/accounts/" + accountId + "/transfers/" + transfer_status.getValue(), HttpMethod.GET, entity, Transfer[].class);
+                    restTemplate.exchange(baseUrl + "/api/accounts/" + accountId + "/transfers", HttpMethod.GET, entity, Transfer[].class);
             transferList = response.getBody();
         } catch (RestClientResponseException | ResourceAccessException e) {
             BasicLogger.log(e.getMessage());

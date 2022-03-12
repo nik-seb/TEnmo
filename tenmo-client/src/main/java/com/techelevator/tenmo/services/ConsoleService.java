@@ -129,10 +129,7 @@ public class ConsoleService {
         printHeading(headings);
 
         for (Transfer transfer : transfers) {
-            long accountId = transfer.getAccount_from().getAccount_id();
-            String username = transfer.getAccount_from().getUser().getUsername();
-            BigDecimal amount = transfer.getAmount();
-            System.out.printf("%-17s %-23s %2s %-8s\n", transfer.getTransfer_id(), username, "$",amount);
+            System.out.println(transfer.getPendingSummary(true));
         }
 
         System.out.println("--------------------------------------------");
@@ -146,10 +143,7 @@ public class ConsoleService {
         printHeading(headings);
 
         for (Transfer transfer : transfers) {
-            long accountId = transfer.getAccount_to().getAccount_id();
-            String username = transfer.getAccount_to().getUser().getUsername();
-            BigDecimal amount = transfer.getAmount();
-            System.out.printf("%-17s %-23s %2s %-8s\n", transfer.getTransfer_id(), username, "$",amount);
+            System.out.println(transfer.getPendingSummary(false));
 
         }
 
@@ -161,7 +155,7 @@ public class ConsoleService {
         System.out.println("1: Approve");
         System.out.println("2: Reject");
         System.out.println("0: Don't approve or reject");
-        System.out.println("---------");
+        System.out.println("--------------------------------------------");
     }
 
     public void printTransferDetails (Transfer transfer) {

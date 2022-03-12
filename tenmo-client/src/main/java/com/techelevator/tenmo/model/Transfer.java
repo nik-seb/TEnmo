@@ -34,18 +34,6 @@ public class Transfer {
         return null;
     }
 
-    public String getTransferStatusAsString() {
-        String transferStatusName = getTransferStatusFromId(this.transfer_status_id).name().toLowerCase();
-
-        return transferStatusName.substring(0, 1).toUpperCase() + transferStatusName.substring(1);
-    }
-
-    public String getTransferTypeAsString() {
-        String transferTypeName = getTransferTypeFromId(this.transfer_type_id).name().toLowerCase();
-
-        return transferTypeName.substring(0, 1).toUpperCase() + transferTypeName.substring(1);
-    }
-
     public int getTransfer_type_id() {
         return transfer_type_id;
     }
@@ -109,11 +97,16 @@ public class Transfer {
         } else {
             fromOrTo = "From: " + this.account_from.getUser().getUsername();
         }
+        String formattedString = String.format("%-10s %-22s %2s %-10s", this.getTransfer_id(), fromOrTo, "$", this.getAmount());
 
-        return String.format("%-10s %-22s %2s %-10s", this.getTransfer_id(), fromOrTo, "$", this.getAmount());
+        if (getTransferStatusFromId(getTransfer_status_id()).equals(TransferStatus.PENDING)) {
+            formattedString += " -" + (char)27 + " PENDING";
+        }
+
+        return formattedString;
     }
 
-    public String getPendingSumamry(Boolean isFrom) {
+    public String getPendingSummary(Boolean isFrom) {
         String username;
         if (isFrom) {
             username = getAccount_from().getUser().getUsername();
@@ -129,8 +122,8 @@ public class Transfer {
         return "ID: " + getTransfer_id() +
                 "\nFrom: " + getAccount_from().getUser().getUsername() +
                 "\nTo: " + getAccount_to().getUser().getUsername() +
-                "\nType: " + getTransferTypeAsString() +
-                "\nStatus: " + getTransferStatusAsString() +
+                "\nType: " + getTransferTypeFromId(getTransfer_type_id()).toString() +
+                "\nStatus: " + getTransferStatusFromId(getTransfer_status_id()).toString() +
                 "\nAmount: " + getAmount().toString();
     }
 

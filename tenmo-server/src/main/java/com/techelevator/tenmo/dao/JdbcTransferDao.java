@@ -20,7 +20,7 @@ public class JdbcTransferDao implements TransferDao{
     }
 
     @Override
-    public List<Transfer> listTransfers(int account_id, int transfer_status_id) {
+    public List<Transfer> listTransfers(int account_id) {
         List<Transfer> transferList = new ArrayList<>();
         String sqlGetTransfers = "SELECT transfer_id, transfer_type_id, transfer_status_id, amount, " +
                 "a.account_id as account_from_id, a.user_id as account_from_user_id, a.balance as account_from_balance, " +
@@ -32,8 +32,8 @@ public class JdbcTransferDao implements TransferDao{
                 "JOIN account ab ON (account_to = ab.account_id) " +
                 "JOIN tenmo_user tua ON (tua.user_id = a.user_id) " +
                 "JOIN tenmo_user tuab ON (tuab.user_id = ab.user_id) " +
-                "WHERE (a.account_id = ? OR ab.account_id = ?) AND transfer_status_id = ?;";
-        SqlRowSet result = jdbcTemplate.queryForRowSet(sqlGetTransfers, account_id, account_id, transfer_status_id);
+                "WHERE (a.account_id = ? OR ab.account_id = ?);";
+        SqlRowSet result = jdbcTemplate.queryForRowSet(sqlGetTransfers, account_id, account_id);
         while (result.next()) {
             Transfer transfer = mapRowSetToTransfer(result);
             transferList.add(transfer);
