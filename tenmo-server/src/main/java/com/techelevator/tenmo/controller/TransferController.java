@@ -31,9 +31,9 @@ public class TransferController {
     }
 
     /**
-     * GET - List of Transfers with Status of Pending TO account
+     * GET - List of Transfers with Status of Pending FROM account (request made by other user)
      * @param id - accountID
-     * @return all pending transfers TO account
+     * @return all pending transfers FROM account
      */
     @RequestMapping(value = "/accounts/{id}/transfers/pending", method = RequestMethod.GET)
     public List<Transfer> getPendingTransfers(@PathVariable int id) {
@@ -41,9 +41,9 @@ public class TransferController {
     }
 
     /**
-     * GET - List of Transfers with Status of Pending FROM account
+     * GET - List of Transfers with Status of Pending TO account (request made by current user)
      * @param id - accountId
-     * @return all pending transfers FROM account
+     * @return all pending transfers TO account
      */
     @RequestMapping(value = "/accounts/{id}/transfers/sent", method = RequestMethod.GET)
     public List<Transfer> getSentRequests(@PathVariable int id) {

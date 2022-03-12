@@ -42,7 +42,7 @@ public class JdbcTransferDao implements TransferDao{
     }
 
     @Override
-    public List<Transfer> getPendingTransfers(int account_id) {
+    public List<Transfer> getSentRequests(int account_id) {
         List<Transfer> transferList = new ArrayList<>();
 
         String sql = "SELECT transfer_id, transfer_type_id, transfer_status_id, amount, " +
@@ -65,7 +65,7 @@ public class JdbcTransferDao implements TransferDao{
     }
 
     @Override
-    public List<Transfer> getSentRequests(int account_id) {
+    public List<Transfer> getPendingTransfers(int account_id) {
         List<Transfer> transferList = new ArrayList<>();
 
         String sql = "SELECT transfer_id, transfer_type_id, transfer_status_id, amount, " +

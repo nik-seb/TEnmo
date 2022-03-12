@@ -124,8 +124,8 @@ public class ConsoleService {
         System.out.printf("%-17s %-7s %25s\n", "ID", "To", "Amount");
         System.out.println("---------------------------------------------------");
         for (Transfer transfer : transfers) {
-            long accountId = transfer.getAccount_to().getAccount_id();
-            String username = transfer.getAccount_to().getUser().getUsername();
+            long accountId = transfer.getAccount_from().getAccount_id();
+            String username = transfer.getAccount_from().getUser().getUsername();
             BigDecimal amount = transfer.getAmount();
             System.out.printf("%-17s %-23s %2s %-8s\n", transfer.getTransfer_id(), username, "$",amount);
         }
@@ -139,8 +139,8 @@ public class ConsoleService {
         System.out.printf("%-17s %-10s %22s\n", "ID", "From", "Amount");
         System.out.println("---------------------------------------------------");
         for (Transfer transfer : transfers) {
-            long accountId = transfer.getAccount_from().getAccount_id();
-            String username = transfer.getAccount_from().getUser().getUsername();
+            long accountId = transfer.getAccount_to().getAccount_id();
+            String username = transfer.getAccount_to().getUser().getUsername();
             BigDecimal amount = transfer.getAmount();
             System.out.printf("%-17s %-23s %2s %-8s\n", transfer.getTransfer_id(), username, "$",amount);
 

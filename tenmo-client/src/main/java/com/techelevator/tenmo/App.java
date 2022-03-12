@@ -229,8 +229,8 @@ public class App {
 
         Transfer newTransfer = new Transfer();
 
-        newTransfer.setAccount_from(userAccount);
-        newTransfer.setAccount_to(toAccount);
+        newTransfer.setAccount_from(toAccount);
+        newTransfer.setAccount_to(userAccount);
         newTransfer.setTransfer_status_id(TransferStatus.PENDING);
         newTransfer.setTransfer_type_id(TransferType.REQUEST);
         newTransfer.setAmount(amountToRequest);
@@ -239,7 +239,7 @@ public class App {
 
         if (transfer != null) {
             System.out.println("Successfully requested $" + transfer.getAmount()
-                    + " from: " + transfer.getAccount_to().getUser().getUsername());
+                    + " from: " + transfer.getAccount_from().getUser().getUsername());
         } else {
             System.out.println("There was an issue sending a transfer...Please try later");
         }
