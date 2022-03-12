@@ -16,6 +16,6 @@ public interface TransferDao {
 
     Transfer createTransfer(Transfer transfer);
 
-    Transfer transferApproval (Transfer transfer, int transfer_id);
+    Transfer updateTransferApproval (Transfer transfer, int transfer_id);
 
 }
