@@ -123,14 +123,8 @@ public class TransferService {
         return transfer;
     }
 
-    public boolean approveOrRejectTransfer (Transfer transfer, boolean isApproved) {
+    public boolean approveOrRejectTransfer (Transfer transfer) {
         long transfer_id = transfer.getTransfer_id();
-
-        if (isApproved) {
-            transfer.setTransfer_status_id(TransferStatus.APPROVED);
-        } else {
-            transfer.setTransfer_status_id(TransferStatus.REJECTED);
-        }
 
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(authToken);

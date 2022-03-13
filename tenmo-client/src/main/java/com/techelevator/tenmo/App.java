@@ -161,11 +161,12 @@ public class App {
     private void approveOrRejectPendingTransfer (Transfer transferToUpdate) {
         consoleService.printPendingTransferOptions();
         int selectedAction = consoleService.promptForMenuSelection("Please choose an option: ");
-        boolean isUpdated = false;
+        boolean isUpdated;
         switch (selectedAction) {
             case 1:
                 if (userAccount.getBalance().compareTo(transferToUpdate.getAmount()) >= 0) {
-                    isUpdated = transferService.approveOrRejectTransfer(transferToUpdate, true);
+                    transferToUpdate.setTransfer_status_id(TransferStatus.APPROVED);
+                    isUpdated = transferService.approveOrRejectTransfer(transferToUpdate);
                     if (isUpdated) {
                         Transfer returnedTransfer = accountService.sendBucks(transferToUpdate);
                         consoleService.printApprovedTransferConfirmation(returnedTransfer);
@@ -176,7 +177,9 @@ public class App {
                     System.out.println("You don't have sufficient balance to send that transfer.");
                 }
                 break;
-            case 2: isUpdated = transferService.approveOrRejectTransfer(transferToUpdate, false);
+            case 2:
+                transferToUpdate.setTransfer_status_id(TransferStatus.REJECTED);
+                isUpdated = transferService.approveOrRejectTransfer(transferToUpdate);
                 if (isUpdated) {
                     System.out.println("You have rejected the transfer.");
                 } else {
