@@ -100,7 +100,11 @@ public class Transfer {
         String formattedString = String.format("%-10s %-22s %2s %-10s", this.getTransfer_id(), fromOrTo, "$", this.getAmount());
 
         if (getTransferStatusFromId(getTransfer_status_id()).equals(TransferStatus.PENDING)) {
-            formattedString += " -" + (char)27 + " PENDING";
+            formattedString += " -" + (char)27 + "[33m PENDING" + (char)27 + "[0m";
+        }
+
+        if (getTransferStatusFromId(getTransfer_status_id()).equals(TransferStatus.REJECTED)) {
+            formattedString += " -" + (char)27 + "[31m REJECTED" + (char)27 + "[0m";
         }
 
         return formattedString;

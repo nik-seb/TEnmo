@@ -123,27 +123,26 @@ public class TransferService {
         return transfer;
     }
 
-    public boolean approveOrRejectTransfer (long transfer_id, boolean isApproved) {
-        Transfer transfer = getTransferById(transfer_id);
+    public boolean approveOrRejectTransfer (Transfer transfer, boolean isApproved) {
+        long transfer_id = transfer.getTransfer_id();
+
         if (isApproved) {
             transfer.setTransfer_status_id(TransferStatus.APPROVED);
         } else {
             transfer.setTransfer_status_id(TransferStatus.REJECTED);
         }
 
-        if (transfer != null){
-            HttpHeaders headers = new HttpHeaders();
-            headers.setBearerAuth(authToken);
-            headers.setContentType(MediaType.APPLICATION_JSON);
-            HttpEntity<Transfer> entity = new HttpEntity<>(transfer, headers);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth(authToken);
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<Transfer> entity = new HttpEntity<>(transfer, headers);
 
-            try {
-                ResponseEntity<Transfer> response =
-                        restTemplate.exchange(baseUrl + "api/transfers/" + transfer_id, HttpMethod.PUT, entity, Transfer.class);
-                return true;
-            } catch (RestClientResponseException | ResourceAccessException e) {
-                BasicLogger.log(e.getMessage());
-            }
+        try {
+            ResponseEntity<Transfer> response =
+                    restTemplate.exchange(baseUrl + "api/transfers/" + transfer_id, HttpMethod.PUT, entity, Transfer.class);
+            return true;
+        } catch (RestClientResponseException | ResourceAccessException e) {
+            BasicLogger.log(e.getMessage());
         }
         return false;
     }
