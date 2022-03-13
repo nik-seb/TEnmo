@@ -159,6 +159,15 @@ public class ConsoleService {
         System.out.println();
     }
 
+    public void printApprovedTransferConfirmation (Transfer transfer) {
+        if (transfer != null) {
+            System.out.println("You have successfully sent the transfer.");
+            System.out.println("Your new balance is: " + transfer.getAccount_from().getBalance());
+        } else {
+            System.out.println("There has been a problem transferring the money.");
+        }
+    }
+
     public void printTransferDetails (Transfer transfer) {
         System.out.println();
         System.out.println("┌───────────────────────────────────────────┐");

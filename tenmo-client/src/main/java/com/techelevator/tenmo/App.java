@@ -127,55 +127,12 @@ public class App {
         if (!pendingTransfers.isEmpty()) {
             consoleService.printPendingTransfers(pendingTransfers);
 
-            boolean isValidSelection = false;
-            int selectedTransferId = 0;
-            Transfer transferToUpdate = null;
+            Transfer transferToUpdate = selectPendingTransfer(pendingTransfers);
 
-            while (!isValidSelection) {
-                selectedTransferId = consoleService.promptForInt("Please enter transfer ID to approve/reject (0 to cancel): ");
-
-                if (selectedTransferId == 0) {
-                    return;
-                }
-
-                for (Transfer transfer : pendingTransfers) {
-                    if (transfer.getTransferId() == selectedTransferId) {
-                        transferToUpdate = transfer;
-                        isValidSelection = true;
-                        break;
-                    }
-                }
-            }
-
-            consoleService.printPendingTransferOptions();
-            int selectedAction = consoleService.promptForMenuSelection("Please choose an option: ");
-            boolean isUpdated = false;
-            switch (selectedAction) {
-                case 1:
-                    if (userAccount.getBalance().compareTo(transferToUpdate.getAmount()) >= 0) {
-                        isUpdated = transferService.approveOrRejectTransfer(selectedTransferId, true);
-                        if (isUpdated) {
-                            Transfer returnedTransfer = accountService.sendBucks(transferToUpdate);
-                            if (returnedTransfer != null) {
-                                System.out.println("You have successfully sent the transfer.");
-                                System.out.println("Your new balance is: " + returnedTransfer.getAccountFrom().getBalance());
-                            } else {
-                                System.out.println("There has been a problem updating your balance.");
-                            }
-                        } else {
-                            System.out.println("Sorry, there's been a problem. The transfer was unsuccessful.");
-                        }
-                    } else {
-                        System.out.println("You don't have sufficient balance to send that transfer.");
-                    }
-                    break;
-                case 2: isUpdated = transferService.approveOrRejectTransfer(selectedTransferId, false);
-                    break;
-                default:
-                    System.out.println("This transfer has not been approved or rejected.");
-            }
-            if (!isUpdated) {
-                System.out.println("No update has been made to this transfer.");
+            if (transferToUpdate == null) {
+                System.out.println("No transfer has been updated.");
+            } else {
+                approveOrRejectPendingTransfer(transferToUpdate);
             }
         }
 
@@ -183,6 +140,61 @@ public class App {
             System.out.println("No pending transfers found.");
         }
 	}
+
+    private Transfer selectPendingTransfer (List<Transfer> pendingTransfers) {
+        Transfer selectedTransfer = null;
+        long transferId = 0;
+        while (transferId == 0) {
+            transferId = consoleService.promptForInt("Please enter transfer ID to approve/reject (0 to cancel): ");
+
+            if (transferId == 0) {
+                return null;
+            }
+
+            for (Transfer transfer : pendingTransfers) {
+                if (transfer.getTransferId() == transferId) {
+                    selectedTransfer = transfer;
+                    break;
+                }
+            }
+        }
+
+        return selectedTransfer;
+    }
+
+    private void approveOrRejectPendingTransfer (Transfer transferToUpdate) {
+        consoleService.printPendingTransferOptions();
+        int selectedAction = consoleService.promptForMenuSelection("Please choose an option: ");
+        boolean isUpdated;
+        switch (selectedAction) {
+            case 1:
+                if (userAccount.getBalance().compareTo(transferToUpdate.getAmount()) >= 0) {
+                    transferToUpdate.setTransferStatusId(TransferStatus.APPROVED);
+                    isUpdated = transferService.approveOrRejectTransfer(transferToUpdate);
+                    if (isUpdated) {
+                        Transfer returnedTransfer = accountService.sendBucks(transferToUpdate);
+                        consoleService.printApprovedTransferConfirmation(returnedTransfer);
+                    } else {
+                        System.out.println("Sorry, there's been a problem. The transfer was unsuccessful.");
+                    }
+                } else {
+                    System.out.println("You don't have sufficient balance to send that transfer.");
+                }
+                break;
+            case 2:
+                transferToUpdate.setTransferStatusId(TransferStatus.REJECTED);
+                isUpdated = transferService.approveOrRejectTransfer(transferToUpdate);
+                if (isUpdated) {
+                    System.out.println("You have rejected the transfer.");
+                } else {
+                    System.out.println("There has been a problem updating the status of this transfer.");
+                }
+                break;
+            default:
+                System.out.println("This transfer has not been approved or rejected.");
+        }
+    }
+
 
     private void sendOrRequestBucks(TransferType transferType) {
         Account toAccount = selectAnAccountForTransfer();
