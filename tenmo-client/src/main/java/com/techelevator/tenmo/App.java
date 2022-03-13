@@ -4,7 +4,6 @@ import com.techelevator.tenmo.model.*;
 import com.techelevator.tenmo.services.*;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 
 public class App {
@@ -100,11 +99,16 @@ public class App {
 	}
 
 	private void viewTransferHistory() {
-        Transfer[] transferHistory = transferService.getTransferHistory(userAccount.getAccount_id(), TransferStatus.APPROVED);
+        Transfer[] transferHistory = transferService.getTransferHistory(userAccount.getAccountId());
         if (transferHistory != null){
-            consoleService.printTransferHistory(transferHistory, userAccount.getAccount_id());
+            if (transferHistory.length == 0) {
+                System.out.println("No transfers were found for this user.");
+                return;
+            }
+            consoleService.printTransferHistory(transferHistory, userAccount.getAccountId());
         } else {
-            System.out.println("No transfers were found for this user.");
+            System.out.println("There was an error retrieving the transfer history...");
+            return;
         }
         int selection = consoleService.promptForInt("Please enter transfer ID to view details (0 to cancel): ");
         if (selection != 0) {
@@ -114,12 +118,12 @@ public class App {
 	}
 
 	private void viewPendingRequests() {
-        List<Transfer> userRequests = transferService.getSentRequests(userAccount.getAccount_id());
+        List<Transfer> userRequests = transferService.getSentRequests(userAccount.getAccountId());
         if (!userRequests.isEmpty()) {
             consoleService.printUserRequests(userRequests);
         }
 
-        List<Transfer> pendingTransfers = transferService.getPendingTransfers(userAccount.getAccount_id());
+        List<Transfer> pendingTransfers = transferService.getPendingTransfers(userAccount.getAccountId());
         if (!pendingTransfers.isEmpty()) {
             consoleService.printPendingTransfers(pendingTransfers);
 
@@ -135,7 +139,7 @@ public class App {
                 }
 
                 for (Transfer transfer : pendingTransfers) {
-                    if (transfer.getTransfer_id() == selectedTransferId) {
+                    if (transfer.getTransferId() == selectedTransferId) {
                         transferToUpdate = transfer;
                         isValidSelection = true;
                         break;
@@ -154,7 +158,7 @@ public class App {
                             Transfer returnedTransfer = accountService.sendBucks(transferToUpdate);
                             if (returnedTransfer != null) {
                                 System.out.println("You have successfully sent the transfer.");
-                                System.out.println("Your new balance is: " + returnedTransfer.getAccount_from().getBalance());
+                                System.out.println("Your new balance is: " + returnedTransfer.getAccountFrom().getBalance());
                             } else {
                                 System.out.println("There has been a problem updating your balance.");
                             }
@@ -176,7 +180,7 @@ public class App {
         }
 
         if (userRequests.isEmpty() && pendingTransfers.isEmpty()) {
-            System.out.println("No pending transfers found!");
+            System.out.println("No pending transfers found.");
         }
 	}
 
@@ -199,11 +203,11 @@ public class App {
 
         Transfer newTransfer = new Transfer();
 
-        newTransfer.setAccount_from(isRequest ? toAccount : userAccount);
-        newTransfer.setAccount_to(isRequest ? userAccount : toAccount);
-        newTransfer.setTransfer_status_id(isRequest
+        newTransfer.setAccountFrom(isRequest ? toAccount : userAccount);
+        newTransfer.setAccountTo(isRequest ? userAccount : toAccount);
+        newTransfer.setTransferStatusId(isRequest
                 ? TransferStatus.PENDING : TransferStatus.APPROVED);
-        newTransfer.setTransfer_type_id(transferType);
+        newTransfer.setTransferTypeId(transferType);
         newTransfer.setAmount(amountToTransfer);
 
         Transfer transfer = transferService.createNewTransfer(newTransfer);
@@ -211,11 +215,11 @@ public class App {
         if (transfer != null) {
             if (isRequest) {
                 System.out.println("Successfully requested $" + transfer.getAmount()
-                        + " from: " + transfer.getAccount_from().getUser().getUsername());
+                        + " from: " + transfer.getAccountFrom().getUser().getUsername());
             } else {
                 Transfer returnedTransfer = accountService.sendBucks(transfer);
 
-                BigDecimal newBalance = returnedTransfer.getAccount_from().getBalance();
+                BigDecimal newBalance = returnedTransfer.getAccountFrom().getBalance();
 
                 System.out.println("Your new balance is: " + newBalance);
             }

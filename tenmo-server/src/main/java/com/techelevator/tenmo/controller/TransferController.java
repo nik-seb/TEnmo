@@ -67,7 +67,7 @@ public class TransferController {
      */
     @ResponseStatus(HttpStatus.CREATED)
     @RequestMapping(value = "/transfers", method = RequestMethod.POST)
-    public Transfer createTransfer(@RequestBody Transfer transfer) {
+    public Transfer createTransfer(@Valid @RequestBody Transfer transfer) {
         return transferDao.createTransfer(transfer);
     }
 
@@ -78,7 +78,7 @@ public class TransferController {
      * @return the newly updated Transfer object
      */
     @RequestMapping(value = "/transfers/{id}", method = RequestMethod.PUT)
-    public Transfer updateTransferApproval(@RequestBody Transfer transfer, @PathVariable int id) {
+    public Transfer updateTransferApproval(@Valid @RequestBody Transfer transfer, @PathVariable int id) {
         return transferDao.updateTransferApproval(transfer, id);
     }
 

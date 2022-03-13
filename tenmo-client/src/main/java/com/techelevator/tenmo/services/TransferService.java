@@ -44,7 +44,7 @@ public class TransferService {
         return transfer;
     }
 
-    public Transfer[] getTransferHistory(Long accountId, TransferStatus transfer_status) {
+    public Transfer[] getTransferHistory(Long accountId) {
         Transfer[] transferList = null;
 
         HttpHeaders headers = new HttpHeaders();
@@ -126,9 +126,9 @@ public class TransferService {
     public boolean approveOrRejectTransfer (long transfer_id, boolean isApproved) {
         Transfer transfer = getTransferById(transfer_id);
         if (isApproved) {
-            transfer.setTransfer_status_id(TransferStatus.APPROVED);
+            transfer.setTransferStatusId(TransferStatus.APPROVED);
         } else {
-            transfer.setTransfer_status_id(TransferStatus.REJECTED);
+            transfer.setTransferStatusId(TransferStatus.REJECTED);
         }
 
         if (transfer != null){

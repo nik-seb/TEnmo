@@ -34,35 +34,43 @@ public class Transfer {
         return null;
     }
 
-    public int getTransfer_type_id() {
+    public TransferType getTransferType() {
+        return getTransferTypeFromId(this.transfer_type_id);
+    }
+
+    public TransferStatus getTransferStatus() {
+        return getTransferStatusFromId(this.transfer_status_id);
+    }
+
+    public int getTransferTypeId() {
         return transfer_type_id;
     }
 
-    public int getTransfer_status_id() {
+    public int getTransferStatusId() {
         return transfer_status_id;
     }
 
-    public long getTransfer_id() {
+    public long getTransferId() {
         return transfer_id;
     }
 
-    public void setTransfer_id(int transfer_id) {
+    public void setTransferId(int transfer_id) {
         this.transfer_id = transfer_id;
     }
 
-    public Account getAccount_from() {
+    public Account getAccountFrom() {
         return account_from;
     }
 
-    public void setAccount_from(Account account_from) {
+    public void setAccountFrom(Account account_from) {
         this.account_from = account_from;
     }
 
-    public Account getAccount_to() {
+    public Account getAccountTo() {
         return account_to;
     }
 
-    public void setAccount_to(Account account_to) {
+    public void setAccountTo(Account account_to) {
         this.account_to = account_to;
     }
 
@@ -74,34 +82,48 @@ public class Transfer {
         this.amount = amount;
     }
 
-    public void setTransfer_type_id(int id) {
+    public void setTransferTypeId(int id) {
         this.transfer_type_id = id;
     }
 
-    public void setTransfer_status_id(int id) {
+    public void setTransferStatusId(int id) {
         this.transfer_status_id = id;
     }
 
-    public void setTransfer_type_id(TransferType transferType) {
+    public void setTransferTypeId(TransferType transferType) {
         this.transfer_type_id = transferType.getValue();
     }
 
-    public void setTransfer_status_id(TransferStatus transferStatus) {
+    public void setTransferStatusId(TransferStatus transferStatus) {
         this.transfer_status_id = transferStatus.getValue();
     }
 
+    private String getColorFromTransferStatus() {
+        switch (this.getTransferStatus()) {
+            case PENDING:
+                return "33"; // yellow
+            case APPROVED:
+                return "32"; // green
+            case REJECTED:
+                return "31"; // red
+        }
+
+        return "0";
+    }
+
     public String getAccountSummary(Long account_id) {
-        String fromOrTo = "";
-        if (account_id == this.account_from.getAccount_id()) {
+        String fromOrTo;
+        if (account_id == this.account_from.getAccountId()) {
             fromOrTo = "To: " + this.account_to.getUser().getUsername();
         } else {
             fromOrTo = "From: " + this.account_from.getUser().getUsername();
         }
-        String formattedString = String.format("%-10s %-22s %2s %-10s", this.getTransfer_id(), fromOrTo, "$", this.getAmount());
+        String formattedString = String.format("│%-10s %-20s%1s %-10s│",
+                this.getTransferId(), fromOrTo, "$", this.getAmount());
 
-        if (getTransferStatusFromId(getTransfer_status_id()).equals(TransferStatus.PENDING)) {
-            formattedString += " -" + (char)27 + " PENDING";
-        }
+        String statusColor = getColorFromTransferStatus();
+
+        formattedString += (char)27 + "[" + statusColor + "m " + getTransferStatus().toString() + (char)27 + "[0m";
 
         return formattedString;
     }
@@ -109,22 +131,25 @@ public class Transfer {
     public String getPendingSummary(Boolean isFrom) {
         String username;
         if (isFrom) {
-            username = getAccount_from().getUser().getUsername();
+            username = getAccountFrom().getUser().getUsername();
         } else {
-            username = getAccount_to().getUser().getUsername();
+            username = getAccountTo().getUser().getUsername();
         }
-        return String.format("%-10s %-22s %2s %10s", getTransfer_id(), username, "$", getAmount());
+        return String.format("│%-10s %-20s%1s %-10s│", getTransferId(), username, "$", getAmount());
     }
 
+    private String getRow(String column1, String column2) {
+        return String.format("\n│%20s │ %-20s│", column1, column2);
+    }
 
     @Override
     public String toString() {
-        return "ID: " + getTransfer_id() +
-                "\nFrom: " + getAccount_from().getUser().getUsername() +
-                "\nTo: " + getAccount_to().getUser().getUsername() +
-                "\nType: " + getTransferTypeFromId(getTransfer_type_id()).toString() +
-                "\nStatus: " + getTransferStatusFromId(getTransfer_status_id()).toString() +
-                "\nAmount: " + getAmount().toString();
+        return String.format("│%21s│ %-20s│","ID: ", getTransferId()) +
+                getRow("From:", getAccountFrom().getUser().getUsername()) +
+                getRow("To:", getAccountTo().getUser().getUsername()) +
+                getRow("Type:", getTransferType().toString()) +
+                getRow("Status:", getTransferStatus().toString()) +
+                getRow("Amount:", getAmount().toString());
     }
 
 }

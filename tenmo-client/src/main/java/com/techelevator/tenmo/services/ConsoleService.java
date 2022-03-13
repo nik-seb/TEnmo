@@ -23,13 +23,14 @@ public class ConsoleService {
     }
 
     public void printGreeting() {
-        System.out.println();
+        int randomColor = (int) (Math.random() * (37 - 31 + 1) + 31);
+        System.out.println((char)27 + "[" + randomColor + "m");
         System.out.println("            ████████ ███████ ███    ██ ███    ███  ██████            ");
         System.out.println("               ██    ██      ████   ██ ████  ████ ██    ██           ");
         System.out.println("  █████        ██    █████   ██ ██  ██ ██ ████ ██ ██    ██     █████ ");
         System.out.println("               ██    ██      ██  ██ ██ ██  ██  ██ ██    ██           ");
         System.out.println("               ██    ███████ ██   ████ ██      ██  ██████            ");
-        System.out.println();
+        System.out.println((char)27 + "[0m");
     }
 
     public void printLoginMenu() {
@@ -110,36 +111,36 @@ public class ConsoleService {
 
     public void printTransferHistory (Transfer[] transfers, Long account_id) {
         String[] headings = new String[2];
-        headings[0] = String.format("%28s", "Transfers");
-        headings[1] = String.format("%-17s %-10s %15s", "ID", "From / To", "Amount");
+        headings[0] = String.format("│%26s%17s│", "Transfers", ""); // ((44 + 9) / 2) for center
+        headings[1] = String.format("│%-10s %-21s %-10s│", "ID", "From / To", "Amount");
         printHeading(headings);
 
         for (Transfer transfer : transfers) {
             System.out.println(transfer.getAccountSummary(account_id));
         }
 
-        System.out.println("--------------------------------------------");
+        System.out.println("└───────────────────────────────────────────┘");
         System.out.println();
     }
 
     public void printUserRequests(List<Transfer> transfers) {
         String[] headings = new String[2];
-        headings[0] = String.format("%28s", "Sent Requests");
-        headings[1] = String.format("%-17s %-7s %18s", "ID", "To", "Amount");
+        headings[0] = String.format("│%28s%15s│", "Sent Requests", ""); // ((44 + 13) / 2) for center
+        headings[1] = String.format("│%-10s %-21s %-10s│", "ID", "To", "Amount");
         printHeading(headings);
 
         for (Transfer transfer : transfers) {
             System.out.println(transfer.getPendingSummary(true));
         }
 
-        System.out.println("--------------------------------------------");
+        System.out.println("└───────────────────────────────────────────┘");
         System.out.println();
     }
 
     public void printPendingTransfers(List<Transfer> transfers) {
         String[] headings = new String[2];
-        headings[0] = String.format("%28s", "Pending Requests");
-        headings[1] = String.format("%-17s %-10s %14s", "ID", "From", "Amount");
+        headings[0] = String.format("│%30s%13s│", "Pending Requests", ""); // ((44 + 16) / 2) for center
+        headings[1] = String.format("│%-10s %-21s %-10s│", "ID", "From", "Amount");
         printHeading(headings);
 
         for (Transfer transfer : transfers) {
@@ -147,7 +148,7 @@ public class ConsoleService {
 
         }
 
-        System.out.println("--------------------------------------------");
+        System.out.println("└───────────────────────────────────────────┘");
         System.out.println();
     }
 
@@ -155,24 +156,25 @@ public class ConsoleService {
         System.out.println("1: Approve");
         System.out.println("2: Reject");
         System.out.println("0: Don't approve or reject");
-        System.out.println("--------------------------------------------");
+        System.out.println();
     }
 
     public void printTransferDetails (Transfer transfer) {
-        String[] headings = {String.format("%" + 28 + "s", "Transfer Details")};
-        printHeading(headings);
-
+        System.out.println();
+        System.out.println("┌───────────────────────────────────────────┐");
+        System.out.printf("│%30s%13s│%n", "Transfer Details", "");
+        System.out.println("├─────────────────────┬─────────────────────┤");
         System.out.println(transfer.toString());
-        System.out.println("--------------------------------------------");
+        System.out.println("└─────────────────────┴─────────────────────┘");
     }
 
     public void printHeading (String[] heading) {
         System.out.println();
-        System.out.println("--------------------------------------------");
+        System.out.println("┌───────────────────────────────────────────┐");
         for (String string : heading) {
             System.out.println(string);
         }
-        System.out.println("--------------------------------------------");
+        System.out.println("├───────────────────────────────────────────┤");
     }
 
 }

@@ -2,7 +2,6 @@ package com.techelevator.tenmo.services;
 
 import com.techelevator.tenmo.model.Account;
 import com.techelevator.tenmo.model.Transfer;
-import com.techelevator.tenmo.model.User;
 import com.techelevator.util.BasicLogger;
 import org.springframework.http.*;
 import org.springframework.web.client.ResourceAccessException;
@@ -107,8 +106,8 @@ public class AccountService {
 
         // handle the accounts after the transfer was created
         if (transfer != null) {
-            Account accountFrom = transfer.getAccount_from();
-            Account accountTo = transfer.getAccount_to();
+            Account accountFrom = transfer.getAccountFrom();
+            Account accountTo = transfer.getAccountTo();
 
             newAccountFrom = sendMoney(accountFrom, transfer.getAmount());
             newAccountTo = receiveMoney(accountTo, transfer.getAmount());

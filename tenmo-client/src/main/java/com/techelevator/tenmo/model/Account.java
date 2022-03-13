@@ -8,11 +8,11 @@ public class Account {
     private User user;
     private BigDecimal balance;
 
-    public long getAccount_id() {
+    public long getAccountId() {
         return account_id;
     }
 
-    public void setAccount_id(long account_id) {
+    public void setAccountId(long account_id) {
         this.account_id = account_id;
     }
 
