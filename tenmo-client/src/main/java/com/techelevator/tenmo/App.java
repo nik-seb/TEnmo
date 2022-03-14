@@ -233,6 +233,8 @@ public class App {
 
                 BigDecimal newBalance = returnedTransfer.getAccountFrom().getBalance();
 
+                System.out.println("You have sent $" + returnedTransfer.getAmount() + " to " +
+                        returnedTransfer.getAccountTo().getUser().getUsername());
                 System.out.println("Your new balance is: " + newBalance);
             }
         } else {
