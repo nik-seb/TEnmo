@@ -28,14 +28,9 @@ public class TransferService {
     public Transfer getTransferById(Long transferId) {
         Transfer transfer = null;
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.setBearerAuth(authToken);
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        HttpEntity<Transfer> entity = new HttpEntity<>(headers);
-
         try {
             ResponseEntity<Transfer> response =
-                    restTemplate.exchange(baseUrl + "api/transfers/" + transferId, HttpMethod.GET, entity, Transfer.class);
+                    restTemplate.exchange(baseUrl + "api/transfers/" + transferId, HttpMethod.GET, makeAuthEntity(), Transfer.class);
             transfer = response.getBody();
         } catch (RestClientResponseException | ResourceAccessException e) {
             BasicLogger.log(e.getMessage());
@@ -47,14 +42,9 @@ public class TransferService {
     public Transfer[] getTransferHistory(Long accountId) {
         Transfer[] transferList = null;
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.setBearerAuth(authToken);
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        HttpEntity<Transfer> entity = new HttpEntity<>(headers);
-
         try {
             ResponseEntity<Transfer[]> response =
-                    restTemplate.exchange(baseUrl + "/api/accounts/" + accountId + "/transfers", HttpMethod.GET, entity, Transfer[].class);
+                    restTemplate.exchange(baseUrl + "/api/accounts/" + accountId + "/transfers", HttpMethod.GET, makeAuthEntity(), Transfer[].class);
             transferList = response.getBody();
         } catch (RestClientResponseException | ResourceAccessException e) {
             BasicLogger.log(e.getMessage());
@@ -65,14 +55,9 @@ public class TransferService {
     public List<Transfer> getPendingTransfers(Long accountId) {
         List<Transfer> transferList = null;
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.setBearerAuth(authToken);
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        HttpEntity<Transfer> entity = new HttpEntity<>(headers);
-
         try {
             ResponseEntity<Transfer[]> response =
-                    restTemplate.exchange(baseUrl + "/api/accounts/" + accountId + "/transfers/pending", HttpMethod.GET, entity, Transfer[].class);
+                    restTemplate.exchange(baseUrl + "/api/accounts/" + accountId + "/transfers/pending", HttpMethod.GET, makeAuthEntity(), Transfer[].class);
 
             if (response.getBody() != null) {
                 transferList = List.of(response.getBody());
@@ -86,14 +71,9 @@ public class TransferService {
     public List<Transfer> getSentRequests(Long accountId) {
         List<Transfer> transferList = null;
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.setBearerAuth(authToken);
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        HttpEntity<Transfer> entity = new HttpEntity<>(headers);
-
         try {
             ResponseEntity<Transfer[]> response =
-                    restTemplate.exchange(baseUrl + "/api/accounts/" + accountId + "/transfers/sent", HttpMethod.GET, entity, Transfer[].class);
+                    restTemplate.exchange(baseUrl + "/api/accounts/" + accountId + "/transfers/sent", HttpMethod.GET, makeAuthEntity(), Transfer[].class);
 
             if (response.getBody() != null) {
                 transferList = List.of(response.getBody());
@@ -106,11 +86,7 @@ public class TransferService {
 
     public Transfer createNewTransfer(Transfer newTransfer) {
         Transfer transfer = null;
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.setBearerAuth(authToken);
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        HttpEntity<Transfer> entity = new HttpEntity<>(newTransfer, headers);
+        HttpEntity<Transfer> entity = makeTransferEntity(newTransfer);
 
         try {
             ResponseEntity<Transfer> response =
@@ -125,11 +101,7 @@ public class TransferService {
 
     public boolean approveOrRejectTransfer (Transfer transfer) {
         long transfer_id = transfer.getTransferId();
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.setBearerAuth(authToken);
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        HttpEntity<Transfer> entity = new HttpEntity<>(transfer, headers);
+        HttpEntity<Transfer> entity = makeTransferEntity(transfer);
 
         try {
             ResponseEntity<Transfer> response =
@@ -139,6 +111,20 @@ public class TransferService {
             BasicLogger.log(e.getMessage());
         }
         return false;
+    }
+
+    private HttpEntity<Transfer> makeTransferEntity(Transfer transfer) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setBearerAuth(authToken);
+        return new HttpEntity<>(transfer, headers);
+    }
+
+    private HttpEntity<Void> makeAuthEntity() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth(authToken);
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        return new HttpEntity<>(headers);
     }
 
 }

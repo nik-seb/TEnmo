@@ -29,13 +29,9 @@ public class AccountService {
     public BigDecimal getCurrentBalance(Long userId) {
         BigDecimal balance = null;
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.setBearerAuth(authToken);
-        HttpEntity<Void> entity = new HttpEntity<>(headers);
-
         try {
             ResponseEntity<BigDecimal> response =
-                    restTemplate.exchange(baseUrl + "api/accounts/" + userId + "/balance", HttpMethod.GET, entity, BigDecimal.class);
+                    restTemplate.exchange(baseUrl + "api/accounts/" + userId + "/balance", HttpMethod.GET, makeAuthEntity(), BigDecimal.class);
             balance = response.getBody();
         } catch (RestClientResponseException | ResourceAccessException e) {
             BasicLogger.log(e.getMessage());
@@ -46,14 +42,9 @@ public class AccountService {
     public Account getAccountById(Long userId) {
         Account account = null;
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.setBearerAuth(authToken);
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        HttpEntity<Void> entity = new HttpEntity<>(headers);
-
         try {
             ResponseEntity<Account> response =
-                    restTemplate.exchange(baseUrl + "api/accounts/" + userId, HttpMethod.GET, entity, Account.class);
+                    restTemplate.exchange(baseUrl + "api/accounts/" + userId, HttpMethod.GET, makeAuthEntity(), Account.class);
             account = response.getBody();
         } catch (RestClientResponseException | ResourceAccessException e) {
             BasicLogger.log(e.getMessage());
@@ -65,13 +56,9 @@ public class AccountService {
     public List<Account> getAllAccounts() {
         List<Account> accounts = new ArrayList<>();
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.setBearerAuth(authToken);
-        HttpEntity<Void> entity = new HttpEntity<>(headers);
-
         try {
             ResponseEntity<Account[]> response =
-                    restTemplate.exchange(baseUrl + "api/accounts", HttpMethod.GET, entity, Account[].class);
+                    restTemplate.exchange(baseUrl + "api/accounts", HttpMethod.GET, makeAuthEntity(), Account[].class);
             if (response.getBody() != null) {
                 accounts = List.of(response.getBody());
             }
@@ -80,10 +67,6 @@ public class AccountService {
         }
 
         return accounts;
-    }
-
-    public void getPendingRequests() {
-        // TODO add this method
     }
 
     public void updateAccount(Account accountToUpdate) {
@@ -140,5 +123,12 @@ public class AccountService {
         account.setBalance(newBalance);
 
         return account;
+    }
+
+    private HttpEntity<Void> makeAuthEntity() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth(authToken);
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        return new HttpEntity<>(headers);
     }
 }
