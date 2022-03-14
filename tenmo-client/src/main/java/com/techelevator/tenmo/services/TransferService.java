@@ -44,7 +44,7 @@ public class TransferService {
         return transfer;
     }
 
-    public Transfer[] getTransferHistory(Long accountId, TransferStatus transfer_status) {
+    public Transfer[] getTransferHistory(Long accountId) {
         Transfer[] transferList = null;
 
         HttpHeaders headers = new HttpHeaders();
@@ -124,7 +124,7 @@ public class TransferService {
     }
 
     public boolean approveOrRejectTransfer (Transfer transfer) {
-        long transfer_id = transfer.getTransfer_id();
+        long transfer_id = transfer.getTransferId();
 
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(authToken);

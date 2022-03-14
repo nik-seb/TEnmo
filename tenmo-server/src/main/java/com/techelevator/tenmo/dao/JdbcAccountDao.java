@@ -36,7 +36,7 @@ public class JdbcAccountDao implements AccountDao {
                         "SET balance = ? " +
                         "WHERE account_id = ?;";
 
-        jdbcTemplate.update(sql, account.getBalance(), account.getAccount_id());
+        jdbcTemplate.update(sql, account.getBalance(), account.getAccountId());
     }
 
     @Override
@@ -57,7 +57,7 @@ public class JdbcAccountDao implements AccountDao {
     @Override
     public List<Account> getAllAccounts() {
         List<Account> accounts = new ArrayList<>();
-        String sql = "SELECT * FROM account JOIN tenmo_user USING(user_id);";
+        String sql = "SELECT * FROM account JOIN tenmo_user USING(user_id) ORDER BY account_id ASC;";
         SqlRowSet results = jdbcTemplate.queryForRowSet(sql);
         while(results.next()) {
             Account account = mapRowSetToAccount(results);
@@ -69,7 +69,7 @@ public class JdbcAccountDao implements AccountDao {
     private Account mapRowSetToAccount(SqlRowSet rowSet) {
          Account account = new Account();
 
-         account.setAccount_id(rowSet.getLong("account_id"));
+         account.setAccountId(rowSet.getLong("account_id"));
          account.setBalance(rowSet.getBigDecimal("balance"));
          User user = new User();
          user.setId(rowSet.getLong("user_id"));

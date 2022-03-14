@@ -32,7 +32,8 @@ public class JdbcTransferDao implements TransferDao{
                 "JOIN account ab ON (account_to = ab.account_id) " +
                 "JOIN tenmo_user tua ON (tua.user_id = a.user_id) " +
                 "JOIN tenmo_user tuab ON (tuab.user_id = ab.user_id) " +
-                "WHERE (a.account_id = ? OR ab.account_id = ?);";
+                "WHERE (a.account_id = ? OR ab.account_id = ?) " +
+                "ORDER BY transfer_id ASC;";
         SqlRowSet result = jdbcTemplate.queryForRowSet(sqlGetTransfers, account_id, account_id);
         while (result.next()) {
             Transfer transfer = mapRowSetToTransfer(result);
@@ -55,7 +56,8 @@ public class JdbcTransferDao implements TransferDao{
                 "JOIN account ab ON (account_to = ab.account_id) " +
                 "JOIN tenmo_user tua ON (tua.user_id = a.user_id) " +
                 "JOIN tenmo_user tuab ON (tuab.user_id = ab.user_id) " +
-                "WHERE ab.account_id = ? AND transfer_status_id = 1;";
+                "WHERE ab.account_id = ? AND transfer_status_id = 1 " +
+                "ORDER BY transfer_id ASC;";
         SqlRowSet result = jdbcTemplate.queryForRowSet(sql, account_id);
         while (result.next()) {
             Transfer transfer = mapRowSetToTransfer(result);
@@ -78,7 +80,8 @@ public class JdbcTransferDao implements TransferDao{
                 "JOIN account ab ON (account_to = ab.account_id) " +
                 "JOIN tenmo_user tua ON (tua.user_id = a.user_id) " +
                 "JOIN tenmo_user tuab ON (tuab.user_id = ab.user_id) " +
-                "WHERE a.account_id = ? AND transfer_status_id = 1;";
+                "WHERE a.account_id = ? AND transfer_status_id = 1 " +
+                "ORDER BY transfer_id ASC;";
         SqlRowSet result = jdbcTemplate.queryForRowSet(sql, account_id);
         while (result.next()) {
             Transfer transfer = mapRowSetToTransfer(result);
@@ -118,10 +121,10 @@ public class JdbcTransferDao implements TransferDao{
 
         Integer newId = jdbcTemplate.queryForObject(sql,
                 Integer.class,
-                transfer.getTransfer_type_id(),
-                transfer.getTransfer_status_id(),
-                transfer.getAccount_from().getAccount_id(),
-                transfer.getAccount_to().getAccount_id(),
+                transfer.getTransferTypeId(),
+                transfer.getTransferStatusId(),
+                transfer.getAccountFrom().getAccountId(),
+                transfer.getAccountTo().getAccountId(),
                 transfer.getAmount());
 
         Transfer newTransfer = null;
@@ -136,7 +139,7 @@ public class JdbcTransferDao implements TransferDao{
     public Transfer updateTransferApproval(Transfer transfer, int transfer_id) {
         Transfer updatedTransfer = null;
         String sqlUpdateTransfer = "UPDATE transfer SET transfer_status_id = ? WHERE transfer_id = ?;";
-        int rowsUpdated = jdbcTemplate.update(sqlUpdateTransfer, transfer.getTransfer_status_id(), transfer_id);
+        int rowsUpdated = jdbcTemplate.update(sqlUpdateTransfer, transfer.getTransferStatusId(), transfer_id);
         if (rowsUpdated == 1) {
             updatedTransfer = transfer;
         }
@@ -145,9 +148,9 @@ public class JdbcTransferDao implements TransferDao{
 
     private Transfer mapRowSetToTransfer (SqlRowSet rowSet) {
         Transfer transfer = new Transfer();
-        transfer.setTransfer_id(rowSet.getLong("transfer_id"));
-        transfer.setTransfer_type_id(rowSet.getInt("transfer_type_id"));
-        transfer.setTransfer_status_id(rowSet.getInt("transfer_status_id"));
+        transfer.setTransferId(rowSet.getLong("transfer_id"));
+        transfer.setTransferTypeId(rowSet.getInt("transfer_type_id"));
+        transfer.setTransferStatusId(rowSet.getInt("transfer_status_id"));
 
         User userFrom = new User();
         userFrom.setId(rowSet.getLong("account_from_user_id"));
@@ -160,17 +163,17 @@ public class JdbcTransferDao implements TransferDao{
         userTo.setPassword(rowSet.getString("account_to_password_hash"));
 
         Account accountFrom = new Account();
-        accountFrom.setAccount_id(rowSet.getLong("account_from_id"));
+        accountFrom.setAccountId(rowSet.getLong("account_from_id"));
         accountFrom.setUser(userFrom);
         accountFrom.setBalance(rowSet.getBigDecimal("account_from_balance"));
 
         Account accountTo = new Account();
-        accountTo.setAccount_id(rowSet.getLong("account_to_id"));
+        accountTo.setAccountId(rowSet.getLong("account_to_id"));
         accountTo.setUser(userTo);
         accountTo.setBalance(rowSet.getBigDecimal("account_to_balance"));
 
-        transfer.setAccount_from(accountFrom);
-        transfer.setAccount_to(accountTo);
+        transfer.setAccountFrom(accountFrom);
+        transfer.setAccountTo(accountTo);
         transfer.setAmount(rowSet.getBigDecimal("amount"));
         return transfer;
     }
